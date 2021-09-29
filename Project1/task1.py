@@ -5,10 +5,16 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 
+# Make data.
+x = np.arange(0, 1, 0.05)
+y = np.arange(0, 1, 0.05)
+x, y = np.meshgrid(x,y)
 
 
-""" First we define our X from SCD decomposition """
-def :
+z = FrankeFunction(x, y)
+
+"""First we define our X from SCD decomposition"""
+def singular_value_decom(x):
     P, D, Q = np.linalg.svd(x, full_matrices=False)
     X = P @ diag(D) @ Q
     return X
@@ -52,4 +58,4 @@ def MSE(x, y, data):
 """Defining R2"""
 
 def R2(y_data, y_model):
-    return 1. np.sum((y_data - y_model)**2/np.sum((y_data- np.mean(y_data))**2)
+    return 1 - np.sum((y_data - y_model)**2)/np.sum((y_data- np.mean(y_data))**2)

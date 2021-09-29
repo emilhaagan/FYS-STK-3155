@@ -10,12 +10,12 @@ fig = plt.figure()
 ax = fig.gca(projection='3d')
 
 
-"""
+
 # Make data.
 x = np.arange(0, 1, 0.05)
 y = np.arange(0, 1, 0.05)
 x, y = np.meshgrid(x,y)
-"""
+
 
 def FrankeFunction(x,y):
     term1 = 0.75*np.exp(-(0.25*(9*x-2)**2) - 0.25*((9*y-2)**2))
