@@ -61,7 +61,7 @@ def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "fl
             theta = theta - v_
 
         return theta
-
+"""
 def SGD(gradient, x, y, first_iter=1, lr = 0.1, batch_sz = 5, n=100, n_tol = 1e-7, dtype = "float64"):
 
     #See if we can call gradient
@@ -119,7 +119,7 @@ def SGD(gradient, x, y, first_iter=1, lr = 0.1, batch_sz = 5, n=100, n_tol = 1e-
             v_ = gamma*v_ + eta_*gradient(x_iter, y_iter, a)
             theta = theta - v_
     return theta
-
+"""
 n = 1000
 x = 2*np.random.rand(n,1)
 y = 4+3*x+np.random.randn(n,1)
