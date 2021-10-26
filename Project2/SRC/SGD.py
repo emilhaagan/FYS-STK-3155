@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor
 from autograd import grad
 from autograd import elementwise_grad as egrad  # for functions that vectorize over inputs
+from sklearn import linear_model
 
 
 #Standard gradient decent
@@ -73,24 +74,23 @@ def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "fl
             gamma = learning_schedule(t0, t1, epoc*m+i) #Calling function to cal. gamma
             eta_ = eta(t0, t1, epoc*m+i) #Calling function to cal. eta
 
-            v_ = gamma*v_ + eta_*grad(x_iter, y_iter, theta - gamma*v_) #Cal. v where gradient is from autograd
+            v_ = gamma*v_ + eta_*grad(gradient)(x_iter, y_iter, theta - gamma*v_) #Cal. v where gradient is from autograd
             theta = theta - v_ #Theta +1 from this itteration of theta and v
 
-    return theta
+        return theta
 
 #Test run
 n = 1000
 x = 2*np.random.rand(n,1)
 y = 4+3*x+np.random.randn(n,1)
-#v = SGD(gradient,x=x, y=y, n = n)
-#print(v)
 
 func = SGD_02(learning_schedule, eta, x=x, y=y)
 print("This is the SGD:")
 print(func)
 
-
-
+#SGDReg =linear_model.SGDRegressor(max_iter = 1000,penalty = "elasticnet",loss = 'huber',tol = 1e-3, average = True)
+#SGDReg.fit(x, y)
+#print(SGDReg.coef_.fit(x, y))
 
 """
 #Old SGD
