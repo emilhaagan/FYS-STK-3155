@@ -1,0 +1,392 @@
+--- Alpha value: 1e-10 ---
+ Mean Squared error: 0.0010286 
+ R2 Score: 0.9289378
+--- Alpha value: 1e-09 ---
+ Mean Squared error: 0.0010286 
+ R2 Score: 0.9289374
+--- Alpha value: 1e-08 ---
+ Mean Squared error: 0.0010286 
+ R2 Score: 0.9289332
+--- Alpha value: 1e-07 ---
+ Mean Squared error: 0.0010292 
+ R2 Score: 0.9288920
+--- Alpha value: 1e-06 ---
+ Mean Squared error: 0.0010349 
+ R2 Score: 0.9284966
+--- Alpha value: 1e-05 ---
+ Mean Squared error: 0.0010756 
+ R2 Score: 0.9256873
+--- Alpha value: 0.0001 ---
+ Mean Squared error: 0.0015685 
+ R2 Score: 0.8916364
+--- Alpha value: 0.001 ---
+ Mean Squared error: 0.0023332 
+ R2 Score: 0.8388014
+--- alpha value: 1e-07 --- 
+ Noise: 0.0 
+ Mean Squared error: 0.0011906 
+ R2 Score: 0.9290697
+ Noise: 0.01 
+ Mean Squared error: 0.0012035 
+ R2 Score: 0.9282925
+ Noise: 0.02 
+ Mean Squared error: 0.0011925 
+ R2 Score: 0.9288077
+ Noise: 0.03 
+ Mean Squared error: 0.0013444 
+ R2 Score: 0.9193300
+ Noise: 0.04 
+ Mean Squared error: 0.0015275 
+ R2 Score: 0.9114167
+ Noise: 0.05 
+ Mean Squared error: 0.0017988 
+ R2 Score: 0.8999982
+ Noise: 0.06 
+ Mean Squared error: 0.0017979 
+ R2 Score: 0.8951018
+ Noise: 0.07 
+ Mean Squared error: 0.0022812 
+ R2 Score: 0.8755963
+ Noise: 0.08 
+ Mean Squared error: 0.0023124 
+ R2 Score: 0.8680861
+ Noise: 0.09 
+ Mean Squared error: 0.0027375 
+ R2 Score: 0.8534412
+ Noise: 0.1 
+ Mean Squared error: 0.0034467 
+ R2 Score: 0.8207942
+ Noise: 0.11 
+ Mean Squared error: 0.0038128 
+ R2 Score: 0.8017136
+ Noise: 0.12 
+ Mean Squared error: 0.0045019 
+ R2 Score: 0.7670334
+ Noise: 0.13 
+ Mean Squared error: 0.0046394 
+ R2 Score: 0.7766859
+ Noise: 0.14 
+ Mean Squared error: 0.0047270 
+ R2 Score: 0.7752101
+ Noise: 0.15 
+ Mean Squared error: 0.0057441 
+ R2 Score: 0.7291250
+ Noise: 0.16 
+ Mean Squared error: 0.0062201 
+ R2 Score: 0.7150551
+ Noise: 0.17 
+ Mean Squared error: 0.0078730 
+ R2 Score: 0.7003387
+ Noise: 0.18 
+ Mean Squared error: 0.0078739 
+ R2 Score: 0.6470296
+ Noise: 0.19 
+ Mean Squared error: 0.0075475 
+ R2 Score: 0.6467738
+ Noise: 0.2 
+ Mean Squared error: 0.0082119 
+ R2 Score: 0.6565832
+ Noise: 0.21 
+ Mean Squared error: 0.0108241 
+ R2 Score: 0.5619657
+ Noise: 0.22 
+ Mean Squared error: 0.0106937 
+ R2 Score: 0.6133370
+ Noise: 0.23 
+ Mean Squared error: 0.0110616 
+ R2 Score: 0.6026832
+ Noise: 0.24 
+ Mean Squared error: 0.0132340 
+ R2 Score: 0.5494695
+ Noise: 0.25 
+ Mean Squared error: 0.0147770 
+ R2 Score: 0.5182997
+ Noise: 0.26 
+ Mean Squared error: 0.0135520 
+ R2 Score: 0.5272772
+ Noise: 0.27 
+ Mean Squared error: 0.0155775 
+ R2 Score: 0.4879991
+ Noise: 0.28 
+ Mean Squared error: 0.0168916 
+ R2 Score: 0.4714771
+ Noise: 0.29 
+ Mean Squared error: 0.0184353 
+ R2 Score: 0.4244187
+ Noise: 0.3 
+ Mean Squared error: 0.0229805 
+ R2 Score: 0.3239063
+ Noise: 0.31 
+ Mean Squared error: 0.0219958 
+ R2 Score: 0.3880797
+ Noise: 0.32 
+ Mean Squared error: 0.0239668 
+ R2 Score: 0.3948270
+ Noise: 0.33 
+ Mean Squared error: 0.0237742 
+ R2 Score: 0.4056358
+ Noise: 0.34 
+ Mean Squared error: 0.0291300 
+ R2 Score: 0.3589203
+ Noise: 0.35000000000000003 
+ Mean Squared error: 0.0288916 
+ R2 Score: 0.3691331
+ Noise: 0.36 
+ Mean Squared error: 0.0288875 
+ R2 Score: 0.3767058
+ Noise: 0.37 
+ Mean Squared error: 0.0335323 
+ R2 Score: 0.3294950
+ Noise: 0.38 
+ Mean Squared error: 0.0280888 
+ R2 Score: 0.3684627
+ Noise: 0.39 
+ Mean Squared error: 0.0284949 
+ R2 Score: 0.3692918
+--- alpha value: 0.001 --- 
+ Noise: 0.0 
+ Mean Squared error: 0.0024075 
+ R2 Score: 0.8565695
+ Noise: 0.01 
+ Mean Squared error: 0.0024588 
+ R2 Score: 0.8538108
+ Noise: 0.02 
+ Mean Squared error: 0.0025182 
+ R2 Score: 0.8517636
+ Noise: 0.03 
+ Mean Squared error: 0.0025025 
+ R2 Score: 0.8501229
+ Noise: 0.04 
+ Mean Squared error: 0.0028457 
+ R2 Score: 0.8359832
+ Noise: 0.05 
+ Mean Squared error: 0.0031160 
+ R2 Score: 0.8263465
+ Noise: 0.06 
+ Mean Squared error: 0.0026685 
+ R2 Score: 0.8435246
+ Noise: 0.07 
+ Mean Squared error: 0.0030614 
+ R2 Score: 0.8281311
+ Noise: 0.08 
+ Mean Squared error: 0.0035519 
+ R2 Score: 0.8002770
+ Noise: 0.09 
+ Mean Squared error: 0.0036457 
+ R2 Score: 0.7976252
+ Noise: 0.1 
+ Mean Squared error: 0.0048477 
+ R2 Score: 0.7496895
+ Noise: 0.11 
+ Mean Squared error: 0.0052547 
+ R2 Score: 0.7332517
+ Noise: 0.12 
+ Mean Squared error: 0.0055475 
+ R2 Score: 0.7174402
+ Noise: 0.13 
+ Mean Squared error: 0.0062859 
+ R2 Score: 0.6984565
+ Noise: 0.14 
+ Mean Squared error: 0.0076881 
+ R2 Score: 0.6625376
+ Noise: 0.15 
+ Mean Squared error: 0.0071845 
+ R2 Score: 0.6476409
+ Noise: 0.16 
+ Mean Squared error: 0.0078636 
+ R2 Score: 0.6282662
+ Noise: 0.17 
+ Mean Squared error: 0.0091762 
+ R2 Score: 0.5768433
+ Noise: 0.18 
+ Mean Squared error: 0.0090175 
+ R2 Score: 0.6395069
+ Noise: 0.19 
+ Mean Squared error: 0.0101482 
+ R2 Score: 0.5818764
+ Noise: 0.2 
+ Mean Squared error: 0.0102837 
+ R2 Score: 0.6023571
+ Noise: 0.21 
+ Mean Squared error: 0.0110514 
+ R2 Score: 0.5822200
+ Noise: 0.22 
+ Mean Squared error: 0.0110706 
+ R2 Score: 0.5528436
+ Noise: 0.23 
+ Mean Squared error: 0.0158157 
+ R2 Score: 0.4558244
+ Noise: 0.24 
+ Mean Squared error: 0.0141979 
+ R2 Score: 0.4803894
+ Noise: 0.25 
+ Mean Squared error: 0.0137462 
+ R2 Score: 0.5067142
+ Noise: 0.26 
+ Mean Squared error: 0.0168306 
+ R2 Score: 0.4716100
+ Noise: 0.27 
+ Mean Squared error: 0.0162591 
+ R2 Score: 0.4706895
+ Noise: 0.28 
+ Mean Squared error: 0.0175439 
+ R2 Score: 0.4948807
+ Noise: 0.29 
+ Mean Squared error: 0.0204271 
+ R2 Score: 0.3946092
+ Noise: 0.3 
+ Mean Squared error: 0.0199135 
+ R2 Score: 0.3973015
+ Noise: 0.31 
+ Mean Squared error: 0.0205021 
+ R2 Score: 0.3755310
+ Noise: 0.32 
+ Mean Squared error: 0.0244619 
+ R2 Score: 0.3620296
+ Noise: 0.33 
+ Mean Squared error: 0.0299215 
+ R2 Score: 0.2286727
+ Noise: 0.34 
+ Mean Squared error: 0.0277046 
+ R2 Score: 0.2744243
+ Noise: 0.35000000000000003 
+ Mean Squared error: 0.0277379 
+ R2 Score: 0.2797664
+ Noise: 0.36 
+ Mean Squared error: 0.0268653 
+ R2 Score: 0.3962532
+ Noise: 0.37 
+ Mean Squared error: 0.0285977 
+ R2 Score: 0.3653859
+ Noise: 0.38 
+ Mean Squared error: 0.0289883 
+ R2 Score: 0.2058733
+ Noise: 0.39 
+ Mean Squared error: 0.0405696 
+ R2 Score: 0.2914293
+--- alpha value: 1 --- 
+ Noise: 0.0 
+ Mean Squared error: 0.0521370 
+ R2 Score: -2.1061037
+ Noise: 0.01 
+ Mean Squared error: 0.0520197 
+ R2 Score: -2.1031285
+ Noise: 0.02 
+ Mean Squared error: 0.0524545 
+ R2 Score: -2.1232598
+ Noise: 0.03 
+ Mean Squared error: 0.0526076 
+ R2 Score: -2.1321889
+ Noise: 0.04 
+ Mean Squared error: 0.0518229 
+ R2 Score: -2.0906626
+ Noise: 0.05 
+ Mean Squared error: 0.0529814 
+ R2 Score: -2.0523227
+ Noise: 0.06 
+ Mean Squared error: 0.0542471 
+ R2 Score: -2.0133716
+ Noise: 0.07 
+ Mean Squared error: 0.0511124 
+ R2 Score: -2.0382068
+ Noise: 0.08 
+ Mean Squared error: 0.0542743 
+ R2 Score: -1.9666016
+ Noise: 0.09 
+ Mean Squared error: 0.0520857 
+ R2 Score: -1.9941569
+ Noise: 0.1 
+ Mean Squared error: 0.0545225 
+ R2 Score: -1.9439950
+ Noise: 0.11 
+ Mean Squared error: 0.0508106 
+ R2 Score: -1.7518629
+ Noise: 0.12 
+ Mean Squared error: 0.0527026 
+ R2 Score: -1.7611056
+ Noise: 0.13 
+ Mean Squared error: 0.0548515 
+ R2 Score: -1.6235260
+ Noise: 0.14 
+ Mean Squared error: 0.0587352 
+ R2 Score: -1.7007751
+ Noise: 0.15 
+ Mean Squared error: 0.0535913 
+ R2 Score: -1.4985935
+ Noise: 0.16 
+ Mean Squared error: 0.0558264 
+ R2 Score: -1.8299699
+ Noise: 0.17 
+ Mean Squared error: 0.0633677 
+ R2 Score: -1.5431250
+ Noise: 0.18 
+ Mean Squared error: 0.0578607 
+ R2 Score: -1.4044664
+ Noise: 0.19 
+ Mean Squared error: 0.0624554 
+ R2 Score: -1.5489312
+ Noise: 0.2 
+ Mean Squared error: 0.0647377 
+ R2 Score: -1.3256714
+ Noise: 0.21 
+ Mean Squared error: 0.0599998 
+ R2 Score: -1.2209633
+ Noise: 0.22 
+ Mean Squared error: 0.0645828 
+ R2 Score: -1.2964401
+ Noise: 0.23 
+ Mean Squared error: 0.0612214 
+ R2 Score: -1.3166501
+ Noise: 0.24 
+ Mean Squared error: 0.0643963 
+ R2 Score: -1.3140996
+ Noise: 0.25 
+ Mean Squared error: 0.0703230 
+ R2 Score: -1.2501594
+ Noise: 0.26 
+ Mean Squared error: 0.0613332 
+ R2 Score: -1.1313552
+ Noise: 0.27 
+ Mean Squared error: 0.0699240 
+ R2 Score: -1.3352629
+ Noise: 0.28 
+ Mean Squared error: 0.0638376 
+ R2 Score: -0.7996330
+ Noise: 0.29 
+ Mean Squared error: 0.0653677 
+ R2 Score: -1.0373587
+ Noise: 0.3 
+ Mean Squared error: 0.0712065 
+ R2 Score: -1.1485636
+ Noise: 0.31 
+ Mean Squared error: 0.0754434 
+ R2 Score: -1.2651252
+ Noise: 0.32 
+ Mean Squared error: 0.0712949 
+ R2 Score: -0.8793005
+ Noise: 0.33 
+ Mean Squared error: 0.0689570 
+ R2 Score: -0.9521390
+ Noise: 0.34 
+ Mean Squared error: 0.0777050 
+ R2 Score: -0.9974249
+ Noise: 0.35000000000000003 
+ Mean Squared error: 0.0755104 
+ R2 Score: -0.9678908
+ Noise: 0.36 
+ Mean Squared error: 0.0814661 
+ R2 Score: -0.8396115
+ Noise: 0.37 
+ Mean Squared error: 0.0742822 
+ R2 Score: -0.6975888
+ Noise: 0.38 
+ Mean Squared error: 0.0771531 
+ R2 Score: -0.6436120
+ Noise: 0.39 
+ Mean Squared error: 0.0847248 
+ R2 Score: -0.8627138
+--- BOOTSTRAP --- 
+MSE: 0.15514154189704973 
+R2: 0.3264449166580853 
+Bias: 0.1524875546897804 
+Variance: 0.0026539872072693584 
