@@ -30,11 +30,15 @@ def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "fl
 
     size_matrix = x.shape[0]
     if size_matrix != y.shape[0]:
-        raise ValueError("x and y must have same dimentions")
+        raise ValueError("'x' and 'y' must have same dimentions")
+
+    n_epoc = int(n_epoc)
+    if not 0 < n_epoc <= size_matrix:
+        raise ValueError("Must have a batch size less or equal to observations and greater than zero")
 
     n = int(n)
     if  n <= 0:
-        raise ValueError("n must be > 0 ")
+        raise ValueError("'n' must be greater than 0 ")
 
     m = int(n/M)
     t0 = M
@@ -61,7 +65,26 @@ def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "fl
             theta = theta - v_
 
         return theta
+
+
+n = 1000
+x = 2*np.random.rand(n,1)
+y = 4+3*x+np.random.randn(n,1)
+#v = SGD(gradient,x=x, y=y, n = n)
+#print(v)
+
+func = SGD_02(learning_schedule, eta, x=x, y=y)
+print("This is the SGD:")
+print(func)
+
+
+
+
 """
+#Old SGD
+
+
+
 def SGD(gradient, x, y, first_iter=1, lr = 0.1, batch_sz = 5, n=100, n_tol = 1e-7, dtype = "float64"):
 
     #See if we can call gradient
@@ -120,15 +143,7 @@ def SGD(gradient, x, y, first_iter=1, lr = 0.1, batch_sz = 5, n=100, n_tol = 1e-
             theta = theta - v_
     return theta
 """
-n = 1000
-x = 2*np.random.rand(n,1)
-y = 4+3*x+np.random.randn(n,1)
-#v = SGD(gradient,x=x, y=y, n = n)
-#print(v)
 
-func = SGD_02(learning_schedule, eta, x=x, y=y)
-print("This is the SGD:")
-print(func)
 
 
 """
