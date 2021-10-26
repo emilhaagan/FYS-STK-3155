@@ -21,6 +21,21 @@ def eta(m, mu, dt):
 
 
 def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
+
+    if not callable(learning_schedule):
+        raise TypeError("Can not call 'learning_schedule' must be a callable function")
+
+    if not callable(eta):
+        raise TypeError("Can not call 'eta' must be a callable function")
+
+    size_matrix = x.shape[0]
+    if size_matrix != y.shape[0]:
+        raise ValueError("x and y must have same dimentions")
+
+    n = int(n)
+    if  n <= 0:
+        raise ValueError("n must be > 0 ")
+
     m = int(n/M)
     t0 = M
     t1 = n_epoc
@@ -28,7 +43,6 @@ def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "fl
 
     x = np.array(x, dtype=d_type)
     y = np.array(y, dtype=d_type)
-    size_matrix = x.shape[0]
 
     theta = 0
     v_ = 0
