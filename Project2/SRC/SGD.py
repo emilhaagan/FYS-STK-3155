@@ -7,66 +7,78 @@ from autograd import grad
 from autograd import elementwise_grad as egrad  # for functions that vectorize over inputs
 
 
-
+#Standard gradient decent
 def gradient(x, y, theta):
-    #return 1/2*np.dot(np.dot(np.transpose(x), theta), x) + np.dot(np.transpose(y), x)
     return 1/2*x.T @ ((x * theta) - y)
 
-
+#This is out gamma and the learning scheduel
 def learning_schedule(m, mu, dt):
     return m/(m+mu*dt)
 
+#The eta values function
 def eta(m, mu, dt):
     return dt**2/(m+mu*dt)
 
-
+"""SGD which takes the arrays x and y, with n_epoc batches and M minibatches for n itterations"""
 def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
 
+    d_type = np.dtype(dtype)
+
+    #Tests for collable functions
     if not callable(learning_schedule):
         raise TypeError("Can not call 'learning_schedule' must be a callable function")
 
     if not callable(eta):
         raise TypeError("Can not call 'eta' must be a callable function")
 
+    #Checks matrix size
     size_matrix = x.shape[0]
     if size_matrix != y.shape[0]:
         raise ValueError("'x' and 'y' must have same dimentions")
 
+    #Check to see if batches are right size
     n_epoc = int(n_epoc)
     if not 0 < n_epoc <= size_matrix:
         raise ValueError("Must have a batch size less or equal to observations and greater than zero")
 
+
+    #Check n is greater than zero
     n = int(n)
     if  n <= 0:
         raise ValueError("'n' must be greater than 0 ")
 
+    #Some initial conditions
     m = int(n/M)
     t0 = M
     t1 = n_epoc
-    d_type = np.dtype(dtype)
-
-    x = np.array(x, dtype=d_type)
-    y = np.array(y, dtype=d_type)
 
     theta = 0
     v_ = 0
+
+    #Setting up arrays
+    x = np.array(x, dtype=d_type)
+    y = np.array(y, dtype=d_type)
+
     xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
 
+    #Main SGD loop
     for epoc in range(n_epoc):
+        #Second SGD loop
         for i in range(m):
             end = i + n_epoc
+            #Defining x and y for each itteration
             x_iter = xy[i:end, :-1]
             y_iter = xy[i:end, -1:]
 
-            gamma = learning_schedule(t0, t1, epoc*m+i)
-            eta_ = eta(t0, t1, epoc*m+i)
+            gamma = learning_schedule(t0, t1, epoc*m+i) #Calling function to cal. gamma
+            eta_ = eta(t0, t1, epoc*m+i) #Calling function to cal. eta
 
-            v_ = gamma*v_ + eta_*grad(x_iter, y_iter, theta - gamma*v_)
-            theta = theta - v_
+            v_ = gamma*v_ + eta_*grad(x_iter, y_iter, theta - gamma*v_) #Cal. v where gradient is from autograd
+            theta = theta - v_ #Theta +1 from this itteration of theta and v
 
-        return theta
+    return theta
 
-
+#Test run
 n = 1000
 x = 2*np.random.rand(n,1)
 y = 4+3*x+np.random.randn(n,1)
