@@ -1,5 +1,6 @@
 
-import numpy as np
+#import numpy as np
+import autograd.numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor
 from autograd import grad
@@ -8,12 +9,46 @@ from autograd import elementwise_grad as egrad  # for functions that vectorize o
 
 
 def gradient(x, y, theta):
-    return 2*x.T @ ((x * theta) - y)
+    #return 1/2*np.dot(np.dot(np.transpose(x), theta), x) + np.dot(np.transpose(y), x)
+    return 1/2*x.T @ ((x * theta) - y)
 
-def learning_schedule(t, t_0, t_1):
-    return t_0/(t+t_1)
 
-def SGD(gradient, x, y, first_iter=1, lr = 0.1, batch_sz = 1, n=100, n_tol = 1e-7, dtype = "float64"):
+def learning_schedule(m, mu, dt):
+    return m/(m+mu*dt)
+
+def eta(m, mu, dt):
+    return dt**2/(m+mu*dt)
+
+
+def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
+    m = int(n/M)
+    t0 = M
+    t1 = n_epoc
+    d_type = np.dtype(dtype)
+
+    x = np.array(x, dtype=d_type)
+    y = np.array(y, dtype=d_type)
+    size_matrix = x.shape[0]
+
+    theta = 0
+    v_ = 0
+    xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
+
+    for epoc in range(n_epoc):
+        for i in range(m):
+            end = i + n_epoc
+            x_iter = xy[i:end, :-1]
+            y_iter = xy[i:end, -1:]
+
+            gamma = learning_schedule(t0, t1, epoc*m+i)
+            eta_ = eta(t0, t1, epoc*m+i)
+
+            v_ = gamma*v_ + eta_*grad(x_iter, y_iter, theta - gamma*v_)
+            theta = theta - v_
+
+        return theta
+
+def SGD(gradient, x, y, first_iter=1, lr = 0.1, batch_sz = 5, n=100, n_tol = 1e-7, dtype = "float64"):
 
     #See if we can call gradient
     if not callable(gradient):
@@ -52,6 +87,8 @@ def SGD(gradient, x, y, first_iter=1, lr = 0.1, batch_sz = 1, n=100, n_tol = 1e-
 
     #Might need to change
     theta = 0
+    eta_ = 0
+    v_ = 0
     xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
 
     #gradient descent
@@ -62,17 +99,22 @@ def SGD(gradient, x, y, first_iter=1, lr = 0.1, batch_sz = 1, n=100, n_tol = 1e-
             y_iter = xy[i:end, -1:]
 
             gamma = learning_schedule(j*size_matrix+i, batch_sz, n)
-            theta = theta - gamma*gradient(x_iter, y_iter, theta)
-
-            v = theta
-
-    return v
+            #theta = theta - gamma*gradient(x_iter, y_iter, theta)
+            eta_ = eta(j*size_matrix+i, batch_sz, n)
+            a = theta+gamma*v_
+            v_ = gamma*v_ + eta_*gradient(x_iter, y_iter, a)
+            theta = theta - v_
+    return theta
 
 n = 1000
 x = 2*np.random.rand(n,1)
 y = 4+3*x+np.random.randn(n,1)
-v = SGD(gradient,x=x, y=y, n = n)
-print(v)
+#v = SGD(gradient,x=x, y=y, n = n)
+#print(v)
+
+func = SGD_02(learning_schedule, eta, x=x, y=y)
+print("This is the SGD:")
+print(func)
 
 
 """
