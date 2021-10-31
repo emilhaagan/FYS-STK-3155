@@ -5,8 +5,10 @@ from autograd import grad
 from autograd import elementwise_grad as egrad  # for functions that vectorize over inputs
 from sklearn import linear_model
 
-class NeuralNetwork:
-    def __init__(self, X, Y, hidden_neurons=50, categories= 10,n_epochs=10 ,batch_sz = 100, lmbda = 0.001):
+
+"""Feed Forward Neural Network"""
+class FeedForwardNeuralNetwork:
+    def __init__(self, X, Y, hidden_neurons=50, categories= 10,n_epochs=10 ,batch_sz = 100, lmbda = 0.001, activation_func_hidden = "sigmoid", activation_func_out = "tanh"):
 
         #Setting up initial conditions for class
         self.X_full = X
@@ -20,10 +22,34 @@ class NeuralNetwork:
         self.lmbda = lmbda
         self.batch_sz=  batch_sz
         self.iter = self.input // self.batch_sz
-        self.eta = (self.n_epochs/2)/(self.n_epochs/2+self.n_epochs)
+        self.eta = (self.n_epochs/2)/(self.n_epochs/2+self.n_epochs) #Learning scheduel
 
-        #Creating bias and weight
+        #Allows other activation function for hidden layer
+        if activation_func_hidden == "sigmoid":
+            activation_func_hidden = sigmoid()
+        elif activation_func_hidden != "sigmoid":
+            activation_func_hidden = activation_func_hidden()
+
+        #Allows other activation function for output layer
+        if activation_func_out == "tanh":
+            activation_func_out = tanh()
+        elif activation_func_out != "tanh":
+            activation_func_out = activation_func_out()
+
+        #Creating bias and weight by running function
         self.crt_b_w()
+
+    def __call__(self):
+
+        size_matrix = X.shape[0]
+        self.n_epochs = int(self.n_epoch)
+        if not 0 < self.n_epoch <= size_matrix:
+            raise ValueError("Must have a batch size less or equal to observations and greater than zero")
+
+        self.batch_sz = int(self.batch_sz)
+        if  self.batch_sz <= 0:
+            raise ValueError("'Batch size' must be greater than 0.")
+
 
     def crt_b_w(self):
         # weights and bias in our hidden
@@ -46,7 +72,7 @@ class NeuralNetwork:
         #Feed forward for network saved globaly in class
         self.z_hidden = np.matmul(X, self.h_weights) + self.h_bias
 
-        self.activation_hidden = sigmoid(self.z_hidden)
+        self.activation_hidden = activation_func_hidden(self.z_hidden)
 
         self.z_out = np.matmul(self.activation_hidden, self.out_weights) + self.out_bias
         self.a_expect = tanh(self.z_out)
@@ -60,7 +86,7 @@ class NeuralNetwork:
         activation_hidden = sigmoid(z_hidden)
 
         z_out = np.matmul(activation_hidden, self.out_weights) + self.out_bias
-        a_expect = tanh(z_out)
+        a_expect = activation_func_out(z_out)
         probability = a_expect/np.sum(a_expect, axis=1, keepdim=True)
         return probability
 
