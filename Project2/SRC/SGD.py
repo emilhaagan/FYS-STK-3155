@@ -13,12 +13,12 @@ def gradient(x, y, theta):
     return 1/2*x.T @ ((x * theta) - y)
 
 #This is out gamma and the learning scheduel
-def learning_schedule(m, mu, dt):
-    return m/(m+mu*dt)
+def learning_schedule(t0, t1, dt):
+    return t0/(t0+t1*dt)
 
 #The eta values function
-def eta(m, mu, dt):
-    return dt**2/(m+mu*dt)
+def eta(t0, t1, dt):
+    return dt**2/(t0+t1*dt)
 
 """SGD which takes the arrays x and y, with n_epoc batches and M minibatches for n itterations"""
 def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
@@ -71,13 +71,13 @@ def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "fl
             x_iter = xy[i:end, :-1]
             y_iter = xy[i:end, -1:]
 
-            gamma = learning_schedule(t0, t1, epoc*m+i) #Calling function to cal. gamma
-            eta_ = eta(t0, t1, epoc*m+i) #Calling function to cal. eta
+            gamma = learning_schedule(t0, t1, epoc/(m+i)) #Calling function to cal. gamma
+            eta_ = eta(t0, t1, epoc/(m+i)) #Calling function to cal. eta
 
             v_ = gamma*v_ + eta_*grad(gradient)(x_iter, y_iter, theta - gamma*v_) #Cal. v where gradient is from autograd
             theta = theta - v_ #Theta +1 from this itteration of theta and v
 
-        return theta
+    return theta
 
 #Test run
 n = 1000
