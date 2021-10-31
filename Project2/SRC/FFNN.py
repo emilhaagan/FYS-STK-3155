@@ -8,7 +8,7 @@ from sklearn import linear_model
 
 """Feed Forward Neural Network"""
 class FeedForwardNeuralNetwork:
-    def __init__(self, X, Y, hidden_neurons=50, categories= 10,n_epochs=10 ,batch_sz = 100, lmbda = 0.001, activation_func_hidden = "sigmoid", activation_func_out = "tanh"):
+    def __init__(self, X, Y, hidden_neurons=50, categories= 10, n_epochs=10 ,batch_sz = 100, lmbda = 0.001, activation_func_hidden = "sigmoid", activation_func_out = "tanh"):
 
         #Setting up initial conditions for class
         self.X_full = X
@@ -28,13 +28,13 @@ class FeedForwardNeuralNetwork:
         if activation_func_hidden == "sigmoid":
             activation_func_hidden = sigmoid()
         elif activation_func_hidden != "sigmoid":
-            activation_func_hidden = activation_func_hidden()
+            activation_func_hidden = activation_func_hidden
 
         #Allows other activation function for output layer
         if activation_func_out == "tanh":
             activation_func_out = tanh()
         elif activation_func_out != "tanh":
-            activation_func_out = activation_func_out()
+            activation_func_out = activation_func_out
 
         #Creating bias and weight by running function
         self.crt_b_w()
@@ -44,11 +44,12 @@ class FeedForwardNeuralNetwork:
         size_matrix = X.shape[0]
         self.n_epochs = int(self.n_epoch)
         if not 0 < self.n_epoch <= size_matrix:
-            raise ValueError("Must have a batch size less or equal to observations and greater than zero")
+            raise ValueError("Must have a 'epochs' size less or equal to observations and greater than zero")
 
         self.batch_sz = int(self.batch_sz)
         if  self.batch_sz <= 0:
             raise ValueError("'Batch size' must be greater than 0.")
+
 
 
     def crt_b_w(self):
