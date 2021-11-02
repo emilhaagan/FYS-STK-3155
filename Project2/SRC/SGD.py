@@ -10,20 +10,22 @@ from sklearn import linear_model
 class StochasticGradientDecent(object):
     """docstring for StochasticGradientDecent."""
 
-    def __init__(self, X, Y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
+    def __init__(self, x, y, n_epoc = 50, M = 10, n=1000, dtype = "float64"):
 
         self.x_full = x
         self.y_full = y
         self.n_epoc = n_epoc
+        #size of each minibatch
         self.M = M
         self.d_type = np.dtype(dtype)
         self.n = n
         #Some initial conditions
+        #nunber of minibatch
         self.m = int(self.n/self.M)
         self.t0 = self.M
         self.t1 = self.n_epoc
-
-        self.theta = 0
+        #theta dimension is based on the number of columns in design matrix
+        self.theta = np.random.randn(2,1)
         self.v_ = 0
 
     def __call__(self):
@@ -40,7 +42,7 @@ class StochasticGradientDecent(object):
 
     #gradient
     def gradient(self, x, y, theta):
-        return 2.0*x.T @ ((x * theta) - y)
+        return 2.0*x.T @ ((x @ theta) - y)
 
     #This the learning scheduel for eta
     def ls(self, t):
@@ -52,12 +54,8 @@ class StochasticGradientDecent(object):
 
 
     def SGD(self):
-
-        size_matrix = x.shape[0]
-        #Setting up arrays
-        x = np.array(self.x_full, dtype=self.d_type)
-        y = np.array(self.y_full, dtype=self.d_type)
-        X = np.c_[np.ones((n,1)), x]
+        X = np.c_[np.ones((n,1)), self.x_full]
+        #size_matrix = x.shape[0]
 
         #xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
 
@@ -66,20 +64,15 @@ class StochasticGradientDecent(object):
             #Second SGD loop with random choice of k
             for k in range(self.m):
                 random_index = np.random.randint(self.m)
-                x_iter = X[random_index:random_index+1]
-                y_iter = y[random_index:random_index+1]
-                #end = i + self.n_epoc
-                #Defining x and y for each itteration
-                #x_iter = xy[i:end, :-1]
-                #y_iter = xy[i:end, -1:]
+                xi = X[random_index:random_index+1]
+                yi = y[random_index:random_index+1]
 
-                #gamma = learning_schedule(self.epoc*self.m+k) #Calling function to cal. gamma
                 eta = self.ls(epoc*self.m+k) #Calling function to cal. eta
                 gamma = 0.3
                 #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
-                place_hold = self.theta - gamma*self.v_
-                x_grad = grad(self.gradient, 0) #Gradient with respect to x
-                self.v_ = gamma*self.v_ + np.dot(eta, x_grad(x_iter, y_iter, place_hold)) #Cal. v where gradient is from autograd
+                place_hold = self.theta + gamma*self.v_
+                x_grad = egrad(self.gradient, 2) #Gradient with respect to x
+                self.v_ = gamma*self.v_ + eta * self.gradient(xi, yi, self.theta) * x_grad(xi, yi, place_hold) #Cal. v where gradient is from autograd
                 self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
 
         return self.theta
@@ -89,7 +82,8 @@ x = 2*np.random.rand(n,1)
 y = 4+3*x+np.random.randn(n,1)
 
 if __name__ == "__main__":
-    theta = StochasticGradientDecent(X=x, Y=y).SGD()
+    theta = StochasticGradientDecent(x, y).SGD()
+    print(theta)
 """
 #Standard gradient decent
 def gradient(x, y, theta):
