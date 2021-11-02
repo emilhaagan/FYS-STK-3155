@@ -12,8 +12,8 @@ class StochasticGradientDecent(object):
 
     def __init__(self, X, Y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
 
-        self.x_full = X
-        self.y_full = Y
+        self.x_full = x
+        self.y_full = y
         self.n_epoc = n_epoc
         self.M = M
         self.d_type = np.dtype(dtype)
@@ -55,10 +55,11 @@ class StochasticGradientDecent(object):
 
         size_matrix = x.shape[0]
         #Setting up arrays
-        X = np.array(self.x_full, dtype=self.d_type)
-        Y = np.array(self.y_full, dtype=self.d_type)
+        x = np.array(self.x_full, dtype=self.d_type)
+        y = np.array(self.y_full, dtype=self.d_type)
+        X = np.c_[np.ones((n,1)), x]
 
-        xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
+        #xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
 
         #Main SGD loop for epochs of minibatches
         for epoc in range(self.n_epoc):
@@ -66,7 +67,7 @@ class StochasticGradientDecent(object):
             for k in range(self.m):
                 random_index = np.random.randint(self.m)
                 x_iter = X[random_index:random_index+1]
-                y_iter = Y[random_index:random_index+1]
+                y_iter = y[random_index:random_index+1]
                 #end = i + self.n_epoc
                 #Defining x and y for each itteration
                 #x_iter = xy[i:end, :-1]
@@ -77,7 +78,7 @@ class StochasticGradientDecent(object):
                 gamma = 0.3
                 #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
                 place_hold = self.theta - gamma*self.v_
-                x_grad = grad(self.gradient, 0)
+                x_grad = grad(self.gradient, 0) #Gradient with respect to x
                 self.v_ = gamma*self.v_ + np.dot(eta, x_grad(x_iter, y_iter, place_hold)) #Cal. v where gradient is from autograd
                 self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
 
