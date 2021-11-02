@@ -47,8 +47,8 @@ class StochasticGradientDecent(object):
         return self.t0/(t+self.t1)
 
     #The eta values function
-    def eta(self, t):
-        return self.t0**2/(t+self.t1)
+    #def eta(self, t):
+        #return self.t0**2/(t+self.t1)
 
 
     def SGD(self):
@@ -72,10 +72,11 @@ class StochasticGradientDecent(object):
                 #x_iter = xy[i:end, :-1]
                 #y_iter = xy[i:end, -1:]
 
-                gamma = learning_schedule(self.epoc*self.m+k) #Calling function to cal. gamma
-                eta_ = eta(self.epoc*self.m+k) #Calling function to cal. eta
+                #gamma = learning_schedule(self.epoc*self.m+k) #Calling function to cal. gamma
+                eta = learning_schedule(self.epoc*self.m+k) #Calling function to cal. eta
 
-                self.v_ = gamma*self.v_ + eta_*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
+                #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
+                self.v_ = gard(Y) + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
                 self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
 
         return self.theta
