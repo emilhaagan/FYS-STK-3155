@@ -7,6 +7,84 @@ from autograd import grad
 from autograd import elementwise_grad as egrad  # for functions that vectorize over inputs
 from sklearn import linear_model
 
+class StochasticGradientDecent(object):
+    """docstring for StochasticGradientDecent."""
+
+    def __init__(self, x, y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
+
+        self.x_full = x
+        self.y_full = y
+        self.n_epoc = n_epoc
+        self.M = M
+        self.n = n
+        self.d_type = np.dtype(dtype)
+
+
+        #Some initial conditions
+        self.m = int(self.n/self.M)
+        self.t0 = self.M
+        self.t1 = self.n_epoc
+
+        self.theta = 0
+        self.v_ = 0
+
+    def __call__(self):
+
+        #Checks matrix size
+        size_matrix = x.shape[0]
+        if size_matrix != y.shape[0]:
+            raise ValueError("'x' and 'y' must have same dimentions")
+
+        #Check to see if batches are right size
+        self.n_epoc = int(self.n_epoc)
+        if not 0 < self.n_epoc <= size_matrix:
+            raise ValueError("Must have a batch size less or equal to observations and greater than zero")
+
+
+        #Check n is greater than zero
+        self.n = int(self.n)
+        if  self.n <= 0:
+            raise ValueError("'n' must be greater than 0 ")
+
+        #gradient
+        def gradient(self, x, y, theta):
+            return 1/2*x.T @ ((x * theta) - y)
+
+        #This is out gamma and the learning scheduel
+        def learning_schedule(self, t0, t1, dt):
+            return t0/(t0+t1*dt)
+
+        #The eta values function
+        def eta(self, t0, t1, dt):
+            return dt**2/(t0+t1*dt)
+
+
+        def SGD(self):
+
+            size_matrix = x.shape[0]
+            #Setting up arrays
+            x = np.array(self.x_full, dtype=self.d_type)
+            y = np.array(self.y_full, dtype=self.d_type)
+
+            xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
+
+            #Main SGD loop
+            for epoc in range(self.n_epoc):
+                #Second SGD loop
+                for i in range(self.m):
+                    end = i + self.n_epoc
+                    #Defining x and y for each itteration
+                    x_iter = xy[i:end, :-1]
+                    y_iter = xy[i:end, -1:]
+
+                    gamma = learning_schedule(t0, t1, epoc/(m+i)) #Calling function to cal. gamma
+                    eta_ = eta(t0, t1, epoc/(m+i)) #Calling function to cal. eta
+
+                    self.v_ = gamma*self.v_ + eta_*grad(gradient)(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
+                    self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
+
+            return self.theta
+
 
 #Standard gradient decent
 def gradient(x, y, theta):

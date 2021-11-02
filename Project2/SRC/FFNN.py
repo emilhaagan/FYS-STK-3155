@@ -41,6 +41,7 @@ class FeedForwardNeuralNetwork:
 
     def __call__(self):
 
+        #Small tests to check input
         size_matrix = X.shape[0]
         self.n_epochs = int(self.n_epoch)
         if not 0 < self.n_epoch <= size_matrix:
