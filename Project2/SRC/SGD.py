@@ -10,7 +10,7 @@ from sklearn import linear_model
 class StochasticGradientDecent(object):
     """docstring for StochasticGradientDecent."""
 
-    def __init__(self, X, Y, n_epoc = 50, M = 5, n=1000 dtype = "float64"):
+    def __init__(self, X, Y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
 
         self.x_full = X
         self.y_full = Y
@@ -76,7 +76,7 @@ class StochasticGradientDecent(object):
                 eta = learning_schedule(self.epoc*self.m+k) #Calling function to cal. eta
 
                 #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
-                self.v_ = gard(Y) + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
+                self.v_ = gard(y_iter) + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
                 self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
 
         return self.theta
