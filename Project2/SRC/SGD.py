@@ -76,7 +76,7 @@ class StochasticGradientDecent(object):
                 eta = learning_schedule(self.epoc*self.m+k) #Calling function to cal. eta
 
                 #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
-                self.v_ = gard(y_iter) + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
+                self.v_ = egrad(y_iter) + eta*grad(gradient, 0)(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
                 self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
 
         return self.theta
