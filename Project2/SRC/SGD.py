@@ -10,7 +10,7 @@ from sklearn import linear_model
 class StochasticGradientDecent(object):
     """docstring for StochasticGradientDecent."""
 
-    def __init__(self, X, Y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
+    def __init__(self, x, y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
 
         self.x_full = x
         self.y_full = y
@@ -29,8 +29,8 @@ class StochasticGradientDecent(object):
     def __call__(self):
 
         #Checks matrix size
-        size_matrix = x.shape[0]
-        if size_matrix != y.shape[0]:
+        size_matrix = self.x_full.shape[0]
+        if size_matrix != self.y_full.shape[0]:
             raise ValueError("'x' and 'y' must have same dimentions")
 
         #Check to see if batches are right size
