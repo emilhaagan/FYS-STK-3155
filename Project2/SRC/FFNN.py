@@ -7,7 +7,7 @@ from sklearn import linear_model
 
 
 """Feed Forward Neural Network"""
-class FeedForwardNeuralNetwork:
+class FeedForwardNeuralNetwork(object):
     def __init__(self, X, Y, hidden_neurons=50, categories= 10, n_epochs=10 ,batch_sz = 100, lmbda = 0.001, activation_func_hidden = "sigmoid", activation_func_out = "tanh"):
 
         #Setting up initial conditions for class
@@ -55,7 +55,7 @@ class FeedForwardNeuralNetwork:
 
     def crt_b_w(self):
         # weights and bias in our hidden
-        #Addind +0.01 so that if we have zero its changed to a low value
+        #Note addind +0.01 so that if we have zero its changed to a low value
         self.h_weights = np.random.normal(self.features, self.hidden_neurons) #with normal distribution
         self.h_bias = np.zeros(self.hidden_neurons) + 0.01
 
