@@ -10,15 +10,14 @@ from sklearn import linear_model
 class StochasticGradientDecent(object):
     """docstring for StochasticGradientDecent."""
 
-    def __init__(self, X, Y, n_epoc = 50, M = 5, dtype = "float64"):
+    def __init__(self, X, Y, n_epoc = 50, M = 5, n=1000 dtype = "float64"):
 
         self.x_full = X
         self.y_full = Y
         self.n_epoc = n_epoc
         self.M = M
         self.d_type = np.dtype(dtype)
-
-
+        self.n = n
         #Some initial conditions
         self.m = int(self.n/self.M)
         self.t0 = self.M
