@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor
 from autograd import grad
 from autograd import elementwise_grad as egrad  # for functions that vectorize over inputs
+from autograd import holomorphic_grad as hgrad
 from sklearn import linear_model
 
 class StochasticGradientDecent(object):
@@ -31,8 +32,8 @@ class StochasticGradientDecent(object):
     def __call__(self):
 
         #Checks matrix size
-        size_matrix = x.shape[0]
-        if size_matrix != y.shape[0]:
+        size_matrix = self.x_full.shape[0]
+        if size_matrix != self.y_full.shape[0]:
             raise ValueError("'x' and 'y' must have same dimentions")
 
         #Check to see if batches are right size
@@ -57,6 +58,7 @@ class StochasticGradientDecent(object):
         X = np.c_[np.ones((n,1)), self.x_full]
         #size_matrix = x.shape[0]
 
+
         #xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
 
         #Main SGD loop for epochs of minibatches
@@ -69,6 +71,7 @@ class StochasticGradientDecent(object):
 
                 eta = self.ls(epoc*self.m+k) #Calling function to cal. eta
                 gamma = 0.3
+
                 #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
                 place_hold = self.theta + gamma*self.v_
                 x_grad = egrad(self.gradient, 2) #Gradient with respect to x
@@ -80,6 +83,7 @@ class StochasticGradientDecent(object):
 n = 1000
 x = 2*np.random.rand(n,1)
 y = 4+3*x+np.random.randn(n,1)
+
 
 if __name__ == "__main__":
     theta = StochasticGradientDecent(x, y).SGD()
