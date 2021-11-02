@@ -42,8 +42,8 @@ class StochasticGradientDecent(object):
     def gradient(self, x, y, theta):
         return 2.0*x.T @ ((x * theta) - y)
 
-    #This is out gamma and the learning scheduel
-    def learning_schedule(self, t):
+    #This the learning scheduel for eta
+    def ls(self, t):
         return self.t0/(t+self.t1)
 
     #The eta values function
@@ -73,14 +73,22 @@ class StochasticGradientDecent(object):
                 #y_iter = xy[i:end, -1:]
 
                 #gamma = learning_schedule(self.epoc*self.m+k) #Calling function to cal. gamma
-                eta = learning_schedule(self.epoc*self.m+k) #Calling function to cal. eta
-
+                eta = self.ls(epoc*self.m+k) #Calling function to cal. eta
+                gamma = 0.3
                 #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
-                self.v_ = egrad(y_iter) + eta*grad(gradient, 0)(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
+                place_hold = self.theta - gamma*self.v_
+                x_grad = grad(self.gradient, 0)
+                self.v_ = gamma*self.v_ + np.dot(eta, x_grad(x_iter, y_iter, place_hold)) #Cal. v where gradient is from autograd
                 self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
 
         return self.theta
 
+n = 1000
+x = 2*np.random.rand(n,1)
+y = 4+3*x+np.random.randn(n,1)
+
+if __name__ == "__main__":
+    theta = StochasticGradientDecent(X=x, Y=y).SGD()
 """
 #Standard gradient decent
 def gradient(x, y, theta):
@@ -93,8 +101,7 @@ def learning_schedule(t0, t1, dt):
 #The eta values function
 def eta(t0, t1, dt):
     return dt**2/(t0+t1*dt)
-
-"""SGD which takes the arrays x and y, with n_epoc batches and M minibatches for n itterations"""
+#SGD which takes the arrays x and y, with n_epoc batches and M minibatches for n itterations
 def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
 
     d_type = np.dtype(dtype)
