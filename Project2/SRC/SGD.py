@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor
 from autograd import grad
 from autograd import elementwise_grad as egrad  # for functions that vectorize over inputs
+from autograd import holomorphic_grad as hgrad
 from sklearn import linear_model
 
 class StochasticGradientDecent(object):
@@ -23,7 +24,7 @@ class StochasticGradientDecent(object):
         self.t0 = self.M
         self.t1 = self.n_epoc
 
-        self.theta = 0
+        self.theta = np.random.randn(2,1)
         self.v_ = 0
 
     def __call__(self):
@@ -40,7 +41,7 @@ class StochasticGradientDecent(object):
 
     #gradient
     def gradient(self, x, y, theta):
-        return 2.0*x.T @ ((x * theta) - y)
+        return 2.0*x.T @ ((x @ theta) - y)
 
     #This the learning scheduel for eta
     def ls(self, t):
@@ -53,11 +54,12 @@ class StochasticGradientDecent(object):
 
     def SGD(self):
 
-        size_matrix = x.shape[0]
+        #size_matrix = x.shape[0]
         #Setting up arrays
         x = np.array(self.x_full, dtype=self.d_type)
         y = np.array(self.y_full, dtype=self.d_type)
         X = np.c_[np.ones((n,1)), x]
+
 
         #xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
 
@@ -76,10 +78,16 @@ class StochasticGradientDecent(object):
                 #gamma = learning_schedule(self.epoc*self.m+k) #Calling function to cal. gamma
                 eta = self.ls(epoc*self.m+k) #Calling function to cal. eta
                 gamma = 0.3
+
                 #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
-                place_hold = self.theta - gamma*self.v_
-                x_grad = grad(self.gradient, 0) #Gradient with respect to x
-                self.v_ = gamma*self.v_ + np.dot(eta, x_grad(x_iter, y_iter, place_hold)) #Cal. v where gradient is from autograd
+                place_hold = self.theta + gamma*self.v_
+                #x_grad = grad(self.gradient, 2) #Gradient with respect to theta
+
+                #x_1 = x_grad(x_iter[:, 0], y_iter, place_hold)
+                #x_2 = x_grad(x_iter[:, 1], y_iter, place_hold)
+                #x_grad_full = np.array([x_1, x_2])
+                #x_grad_full = x_grad(x_iter, y_iter, place_hold)
+                self.v_ = gamma*self.v_ + eta * self.gradient(x_iter, y_iter, place_hold) #Cal. v where gradient is from autograd
                 self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
 
         return self.theta
@@ -88,8 +96,11 @@ n = 1000
 x = 2*np.random.rand(n,1)
 y = 4+3*x+np.random.randn(n,1)
 
+
 if __name__ == "__main__":
-    theta = StochasticGradientDecent(X=x, Y=y).SGD()
+    theta = StochasticGradientDecent(x=x, y=y).SGD()
+
+print(theta)
 """
 #Standard gradient decent
 def gradient(x, y, theta):
