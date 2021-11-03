@@ -11,21 +11,29 @@ from sklearn import linear_model
 class StochasticGradientDecent(object):
     """docstring for StochasticGradientDecent."""
 
-    def __init__(self, x, y, n_epoc = 50, M = 10, n=1000, gamma=0.3, dtype = "float64"):
+    """ x and y are the input data where y must have the same number of rows as x
+        e_epoc is the number of times we run the minibatches
+        M is the size of each minibatch
+        n is the amount of rows or data enteries
+        gamma is a set value 0 <= gamma <= 1"""
+
+    def __init__(self, x, y, n_epoc = 50, M = 10, n=1000, gamma=0.3):
 
         self.x_full = x
         self.y_full = y
         self.n_epoc = n_epoc
+
         #size of each minibatch
         self.M = M
-        self.d_type = np.dtype(dtype)
         self.n = n
         self.gamma = 0.3
+
         #Some initial conditions
-        #nunber of minibatch
+        #number of minibatch
         self.m = int(self.n/self.M)
         self.t0 = self.M
         self.t1 = self.n_epoc
+        
         #theta dimension is based on the number of columns in design matrix
         self.v_ = 0
 
