@@ -76,9 +76,9 @@ class StochasticGradientDecent(object):
         for epoc in range(self.n_epoc):
             #Second SGD loop with random choice of k
             for k in range(self.m):
-                random_index = np.random.randint(self.m)
-                xi = X[random_index:random_index+1]
-                yi = y[random_index:random_index+1]
+                random_index = self.M*np.random.randint(self.m)
+                xi = X[random_index:random_index+self.M]
+                yi = y[random_index:random_index+self.M]
 
                 eta = self.ls(epoc*self.m+k) #Calling function to cal. eta
 
