@@ -26,15 +26,15 @@ class FeedForwardNeuralNetwork(object):
 
         #Allows other activation function for hidden layer
         if activation_func_hidden == "sigmoid":
-            activation_func_hidden = sigmoid()
+            self.activation_func_hidden = sigmoid()
         elif activation_func_hidden != "sigmoid":
-            activation_func_hidden = activation_func_hidden
+            self.activation_func_hidden = activation_func_hidden
 
         #Allows other activation function for output layer
         if activation_func_out == "tanh":
-            activation_func_out = tanh()
+            self.activation_func_out = tanh()
         elif activation_func_out != "tanh":
-            activation_func_out = activation_func_out
+            self.activation_func_out = activation_func_out
 
         #Creating bias and weight by running function
         self.crt_b_w()

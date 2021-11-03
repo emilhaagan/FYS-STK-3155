@@ -18,7 +18,6 @@ class StochasticGradientDecent(object):
         self.n_epoc = n_epoc
         #size of each minibatch
         self.M = M
-        self.d_type = np.dtype(dtype)
         self.n = n
         self.gamma = 0.3
         #Some initial conditions
@@ -39,7 +38,11 @@ class StochasticGradientDecent(object):
         #Check to see if batches are right size
         self.n_epoc = int(self.n_epoc)
         if not 0 < self.n_epoc <= size_matrix:
-            raise ValueError("Must have a batch size less or equal to observations and greater than zero")
+            raise ValueError("Must have a batch size less or equal to observations and greater than zero.")
+
+        #Checks gamma is in range
+        if not 0 <= self.gamma <= 1:
+            raise ValueError("Gamma must be equal or greater than zero and equal or less than 1.")
 
         #Checks gamma is in range
         if not 0 <= self.gamma <= 1:
@@ -47,7 +50,7 @@ class StochasticGradientDecent(object):
 
     #gradient
     def gradient(self, x, y, theta):
-        return 2.0*x.T @ ((x @ theta) - y)
+        return (2.0/self.M)*x.T @ ((x @ theta) - y)
 
     #This the learning scheduel for eta
     def ls(self, t):
@@ -69,9 +72,9 @@ class StochasticGradientDecent(object):
         for epoc in range(self.n_epoc):
             #Second SGD loop with random choice of k
             for k in range(self.m):
-                random_index = np.random.randint(self.m)
-                xi = X[random_index:random_index+1]
-                yi = y[random_index:random_index+1]
+                random_index = self.M*np.random.randint(self.m)
+                xi = X[random_index:random_index+self.M]
+                yi = y[random_index:random_index+self.M]
 
                 eta = self.ls(epoc*self.m+k) #Calling function to cal. eta
 
