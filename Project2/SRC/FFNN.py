@@ -42,6 +42,11 @@ class FeedForwardNeuralNetwork(object):
 
     def __call__(self):
 
+        #Checks matrix size of rows
+        size_matrix = self.x_full.shape[0]
+        if size_matrix != self.y_full.shape[0]:
+            raise ValueError("'x' and 'y' must have same rows")
+
         #Small tests to check input
         size_matrix = X.shape[0]
         self.n_epochs = int(self.n_epoch)
@@ -90,7 +95,7 @@ class FeedForwardNeuralNetwork(object):
         activation_hidden = self.activation_func_hidden(z_hidden)
 
         z_out = np.matmul(activation_hidden, self.out_weights) + self.out_bias
-        a_expect = activation_func_out(z_out)
+        a_expect = self.activation_func_out(z_out)
         probability = a_expect/np.sum(a_expect, axis=1, keepdim=True)
         return probability
 
