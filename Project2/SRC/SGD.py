@@ -11,7 +11,7 @@ from sklearn import linear_model
 class StochasticGradientDecent(object):
     """docstring for StochasticGradientDecent."""
 
-    def __init__(self, x, y, n_epoc = 50, M = 10, n=1000, gamma=0.3 dtype = "float64"):
+    def __init__(self, x, y, n_epoc = 50, M = 10, n=1000, gamma=0.3, dtype = "float64"):
 
         self.x_full = x
         self.y_full = y
