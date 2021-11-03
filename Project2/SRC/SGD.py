@@ -11,7 +11,7 @@ from sklearn import linear_model
 class StochasticGradientDecent(object):
     """docstring for StochasticGradientDecent."""
 
-    def __init__(self, x, y, n_epoc = 50, M = 10, n=1000, dtype = "float64"):
+    def __init__(self, x, y, n_epoc = 50, M = 10, n=1000, gamma=0.3 dtype = "float64"):
 
         self.x_full = x
         self.y_full = y
@@ -20,26 +20,30 @@ class StochasticGradientDecent(object):
         self.M = M
         self.d_type = np.dtype(dtype)
         self.n = n
+        self.gamma = 0.3
         #Some initial conditions
         #nunber of minibatch
         self.m = int(self.n/self.M)
         self.t0 = self.M
         self.t1 = self.n_epoc
         #theta dimension is based on the number of columns in design matrix
-        self.theta = 0 #np.random.randn(2,1)
         self.v_ = 0
 
     def __call__(self):
 
-        #Checks matrix size
+        #Checks matrix size of rows
         size_matrix = self.x_full.shape[0]
         if size_matrix != self.y_full.shape[0]:
-            raise ValueError("'x' and 'y' must have same dimentions")
+            raise ValueError("'x' and 'y' must have same rows")
 
         #Check to see if batches are right size
         self.n_epoc = int(self.n_epoc)
         if not 0 < self.n_epoc <= size_matrix:
             raise ValueError("Must have a batch size less or equal to observations and greater than zero")
+
+        #Checks gamma is in range
+        if not 0 <= self.gamma <= 1:
+            raise ValueError("Gamma must be equal or greater than zero and equal or less than 1.")
 
     #gradient
     def gradient(self, x, y, theta):
@@ -70,12 +74,12 @@ class StochasticGradientDecent(object):
                 yi = y[random_index:random_index+1]
 
                 eta = self.ls(epoc*self.m+k) #Calling function to cal. eta
-                gamma = 0.3
+
 
                 #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
-                place_hold = self.theta + gamma*self.v_
+                place_hold = self.theta + self.gamma*self.v_
                 x_grad = egrad(self.gradient, 2) #Gradient with respect to theta
-                self.v_ = gamma*self.v_ + eta * self.gradient(xi, yi, self.theta) * x_grad(xi, yi, place_hold) #Cal. v where gradient is from autograd
+                self.v_ = self.gamma*self.v_ + eta * self.gradient(xi, yi, self.theta) * x_grad(xi, yi, place_hold) #Cal. v where gradient is from autograd
                 self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
 
         return self.theta
