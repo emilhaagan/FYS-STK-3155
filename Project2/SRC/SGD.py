@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor
 from autograd import grad
 from autograd import elementwise_grad as egrad  # for functions that vectorize over inputs
-from autograd import holomorphic_grad as hgrad
 from sklearn import linear_model
 
 class StochasticGradientDecent(object):
@@ -42,12 +41,12 @@ class StochasticGradientDecent(object):
         #Checks matrix size of rows
         size_matrix = self.x_full.shape[0]
         if size_matrix != self.y_full.shape[0]:
-            raise ValueError("'x' and 'y' must have same rows")
+            raise ValueError("'x' and 'y' must have same rows.")
 
         #Check to see if batches are right size
         self.n_epoc = int(self.n_epoc)
         if not 0 < self.n_epoc <= size_matrix:
-            raise ValueError("Must have a batch size less or equal to observations and greater than zero")
+            raise ValueError("Must have a batch size less or equal to observations and greater than zero.")
 
         #Checks gamma is in range
         if not 0 <= self.gamma <= 1:
