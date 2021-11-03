@@ -54,7 +54,7 @@ class StochasticGradientDecent(object):
 
     #gradient
     def gradient(self, x, y, theta):
-        return 2.0*x.T @ ((x @ theta) - y)
+        return (2.0/self.M)*x.T @ ((x @ theta) - y)
 
     #This the learning scheduel for eta
     def ls(self, t):
