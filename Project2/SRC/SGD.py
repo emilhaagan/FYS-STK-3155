@@ -5,34 +5,26 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor
 from autograd import grad
 from autograd import elementwise_grad as egrad  # for functions that vectorize over inputs
+from autograd import holomorphic_grad as hgrad
 from sklearn import linear_model
 
 class StochasticGradientDecent(object):
     """docstring for StochasticGradientDecent."""
 
-    """ x and y are the input data where y must have the same number of rows as x
-        e_epoc is the number of times we run the minibatches, default 50
-        M is the size of each minibatch, default 10
-        n is the amount of rows or data enteries, default 1000
-        gamma is a set value 0 <= gamma <= 1, default 0.3"""
-
-    def __init__(self, x, y, n_epoc = 50, M = 10, n=1000, gamma=0.3):
+    def __init__(self, x, y, n_epoc = 50, M = 10, n=1000, gamma=0.3, dtype = "float64"):
 
         self.x_full = x
         self.y_full = y
         self.n_epoc = n_epoc
-
         #size of each minibatch
         self.M = M
         self.n = n
         self.gamma = 0.3
-
         #Some initial conditions
-        #number of minibatch
+        #nunber of minibatch
         self.m = int(self.n/self.M)
         self.t0 = self.M
         self.t1 = self.n_epoc
-
         #theta dimension is based on the number of columns in design matrix
         self.v_ = 0
 
@@ -41,12 +33,16 @@ class StochasticGradientDecent(object):
         #Checks matrix size of rows
         size_matrix = self.x_full.shape[0]
         if size_matrix != self.y_full.shape[0]:
-            raise ValueError("'x' and 'y' must have same rows.")
+            raise ValueError("'x' and 'y' must have same rows")
 
         #Check to see if batches are right size
         self.n_epoc = int(self.n_epoc)
         if not 0 < self.n_epoc <= size_matrix:
             raise ValueError("Must have a batch size less or equal to observations and greater than zero.")
+
+        #Checks gamma is in range
+        if not 0 <= self.gamma <= 1:
+            raise ValueError("Gamma must be equal or greater than zero and equal or less than 1.")
 
         #Checks gamma is in range
         if not 0 <= self.gamma <= 1:
