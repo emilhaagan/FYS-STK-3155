@@ -26,7 +26,7 @@ class StochasticGradientDecent(object):
         self.t0 = self.M
         self.t1 = self.n_epoc
         #theta dimension is based on the number of columns in design matrix
-        self.theta = np.random.randn(2,1)
+        self.theta = 0 #np.random.randn(2,1)
         self.v_ = 0
 
     def __call__(self):
@@ -57,7 +57,7 @@ class StochasticGradientDecent(object):
     def SGD(self):
         X = np.c_[np.ones((n,1)), self.x_full]
         #size_matrix = x.shape[0]
-
+        self.theta = np.random.randn(X.shape[1],1) #Initilize theta for matrix shape.
 
         #xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
 
@@ -74,7 +74,7 @@ class StochasticGradientDecent(object):
 
                 #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
                 place_hold = self.theta + gamma*self.v_
-                x_grad = egrad(self.gradient, 2) #Gradient with respect to x
+                x_grad = egrad(self.gradient, 2) #Gradient with respect to theta
                 self.v_ = gamma*self.v_ + eta * self.gradient(xi, yi, self.theta) * x_grad(xi, yi, place_hold) #Cal. v where gradient is from autograd
                 self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
 
@@ -83,6 +83,9 @@ class StochasticGradientDecent(object):
 n = 1000
 x = 2*np.random.rand(n,1)
 y = 4+3*x+np.random.randn(n,1)
+X = np.c_[np.ones((n,1)), x]
+
+#print(X)
 
 
 if __name__ == "__main__":
