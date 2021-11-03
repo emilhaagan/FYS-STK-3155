@@ -12,10 +12,10 @@ class StochasticGradientDecent(object):
     """docstring for StochasticGradientDecent."""
 
     """ x and y are the input data where y must have the same number of rows as x
-        e_epoc is the number of times we run the minibatches
-        M is the size of each minibatch
-        n is the amount of rows or data enteries
-        gamma is a set value 0 <= gamma <= 1"""
+        e_epoc is the number of times we run the minibatches, default 50
+        M is the size of each minibatch, default 10
+        n is the amount of rows or data enteries, default 1000
+        gamma is a set value 0 <= gamma <= 1, default 0.3"""
 
     def __init__(self, x, y, n_epoc = 50, M = 10, n=1000, gamma=0.3):
 
@@ -33,7 +33,7 @@ class StochasticGradientDecent(object):
         self.m = int(self.n/self.M)
         self.t0 = self.M
         self.t1 = self.n_epoc
-        
+
         #theta dimension is based on the number of columns in design matrix
         self.v_ = 0
 
