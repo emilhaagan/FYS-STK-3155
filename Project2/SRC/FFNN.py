@@ -115,8 +115,8 @@ class NeuralNetwork(object):
         self.grad_bias_hidden = np.sum(self.error_in_hidden, axis=0)
 
         if self.lmbda > 0:
-            self.grad_weight_out += self.lmbda * self.out_weights*self.theta[0]#might delete
-            self.grad_weight_hidden += self.lmbda * self.h_weights*self.theta[1]#might delete
+            self.grad_weight_out += self.lmbda * self.out_weights*self.theta[0]#might delete theta
+            self.grad_weight_hidden += self.lmbda * self.h_weights*self.theta[1]#might delete theta
 
         self.out_weights -= self.eta*self.grad_weight_out
         self.out_bias -= self.eta*self.grad_bias_out
