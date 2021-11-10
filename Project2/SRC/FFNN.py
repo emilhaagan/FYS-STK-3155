@@ -65,12 +65,12 @@ class NeuralNetwork(object):
     def crt_b_w(self):
         # weights and bias in our hidden
         #Note addind +0.01 so that if we have zero its changed to a low value
-        self.h_weights = np.random.normal(self.features, self.hidden_neurons) #with normal distribution
-        self.h_bias = np.zeros(self.hidden_neurons) + 0.01
+        self.h_weights = 0.01 + np.random.normal(self.features, self.hidden_neurons) #with normal distribution
+        self.h_bias = np.zeros(self.hidden_neurons)
 
         # weights and bias in our output
-        self.out_weights = np.random.normal(self.hidden_neurons, self.categories)
-        self.out_bias = np.zeros(self.categories) + 0.01
+        self.out_weights = 0.01 + np.random.normal(self.hidden_neurons, self.categories)
+        self.out_bias = np.zeros(self.categories)
 
     #Sigmoid activation function
     def sigmoid(self, x):
@@ -86,7 +86,7 @@ class NeuralNetwork(object):
 
     def ff(self):
         #Feed forward for network saved globaly in class
-        self.z_hidden = np.matmul(X, self.h_weights) + self.h_bias
+        self.z_hidden = np.matmul(self.X_full, self.h_weights) + self.h_bias
 
         activation_hidden = self.activation_func_hidden(self.z_hidden)
 
@@ -119,8 +119,8 @@ class NeuralNetwork(object):
         self.grad_bias_hidden = np.sum(self.error_in_hidden, axis=0)
 
         if self.lmbda > 0:
-            self.grad_weight_out += self.lmbda * self.out_weights*self.theta[0]#might delete theta
-            self.grad_weight_hidden += self.lmbda * self.h_weights*self.theta[1]#might delete theta
+            self.grad_weight_out += self.lmbda * self.out_weights
+            self.grad_weight_hidden += self.lmbda * self.h_weights
 
         self.out_weights -= self.eta*self.grad_weight_out
         self.out_bias -= self.eta*self.grad_bias_out
