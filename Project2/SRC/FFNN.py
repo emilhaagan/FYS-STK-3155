@@ -8,7 +8,7 @@ from SGD import StochasticGradientDecent
 
 
 """Feed Forward Neural Network"""
-class FeedForwardNeuralNetwork(object):
+class NeuralNetwork(object):
     def __init__(self, x, y, hidden_neurons=50, categories= 10, n_epochs=10 ,batch_sz = 100, lmbda = 0.001, activation_func_hidden = "sigmoid", activation_func_out = "tanh"):
 
         #Setting up initial conditions for class
@@ -25,6 +25,7 @@ class FeedForwardNeuralNetwork(object):
         self.iter = self.input // self.batch_sz
         self.eta = (self.n_epochs/2)/(self.n_epochs/2+self.n_epochs) #Learning scheduel
 
+        #Initilize theta from SGD
         self.theta = FeedForwardNeuralNetwork(x, y, n_epoc = self.n_epochs, M = self.categories, n=np.size(self.input), gamma=0.3).SGD()
 
         #Allows other activation function for hidden layer
@@ -114,8 +115,8 @@ class FeedForwardNeuralNetwork(object):
         self.grad_bias_hidden = np.sum(self.error_in_hidden, axis=0)
 
         if self.lmbda > 0:
-            self.grad_weight_out += self.lmbda * self.out_weights
-            self.grad_weight_hidden += self.lmbda * self.h_weights
+            self.grad_weight_out += self.lmbda * self.out_weights*self.theta[0]#might delete
+            self.grad_weight_hidden += self.lmbda * self.h_weights*self.theta[1]#might delete
 
         self.out_weights -= self.eta*self.grad_weight_out
         self.out_bias -= self.eta*self.grad_bias_out
