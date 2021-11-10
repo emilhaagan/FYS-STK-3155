@@ -25,6 +25,8 @@ class FeedForwardNeuralNetwork(object):
         self.iter = self.input // self.batch_sz
         self.eta = (self.n_epochs/2)/(self.n_epochs/2+self.n_epochs) #Learning scheduel
 
+        self.theta = FeedForwardNeuralNetwork(x, y, n_epoc = self.n_epochs, M = self.categories, n=np.size(self.input), gamma=0.3).SGD()
+
         #Allows other activation function for hidden layer
         if activation_func_hidden == "sigmoid":
             self.activation_func_hidden = self.sigmoid
