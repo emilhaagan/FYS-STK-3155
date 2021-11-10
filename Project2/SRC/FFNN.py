@@ -15,8 +15,8 @@ class NeuralNetwork(object):
         self.X_full = x
         self.Y_full = y
 
-        self.input = X.shape[0]
-        self.feauters = X.shape[1]
+        self.input = x.shape[0]
+        self.feauters = x.shape[1]
         self.hidden_neurons = hidden_neurons
         self.categories = categories
         self.n_epochs = n_epochs
