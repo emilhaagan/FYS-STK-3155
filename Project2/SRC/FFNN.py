@@ -26,7 +26,7 @@ class NeuralNetwork(object):
         self.eta = (self.n_epochs/2)/(self.n_epochs/2+self.n_epochs) #Learning scheduel
 
         #Initilize theta from SGD
-        self.theta = FeedForwardNeuralNetwork(x, y, n_epoc = self.n_epochs, M = self.categories, n=np.size(self.input), gamma=0.3).SGD()
+        self.theta = StochasticGradientDecent(x, y, n_epoc = self.n_epochs, M = self.categories, n=np.size(self.input), gamma=0.3).SGD()
 
         #Allows other activation function for hidden layer
         if activation_func_hidden == "sigmoid":
