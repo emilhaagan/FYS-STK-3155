@@ -8,15 +8,15 @@ from SGD import StochasticGradientDecent
 
 
 """Feed Forward Neural Network"""
-class FeedForwardNeuralNetwork(object):
+class NeuralNetwork(object):
     def __init__(self, x, y, hidden_neurons=50, categories= 10, n_epochs=10 ,batch_sz = 100, lmbda = 0.001, activation_func_hidden = "sigmoid", activation_func_out = "tanh"):
 
         #Setting up initial conditions for class
         self.X_full = x
         self.Y_full = y
 
-        self.input = X.shape[0]
-        self.feauters = X.shape[1]
+        self.input = x.shape[0]
+        self.feauters = x.shape[1]
         self.hidden_neurons = hidden_neurons
         self.categories = categories
         self.n_epochs = n_epochs
@@ -25,7 +25,8 @@ class FeedForwardNeuralNetwork(object):
         self.iter = self.input // self.batch_sz
         self.eta = (self.n_epochs/2)/(self.n_epochs/2+self.n_epochs) #Learning scheduel
 
-        self.theta = FeedForwardNeuralNetwork(x, y, n_epoc = self.n_epochs, M = self.categories, n=np.size(self.input), gamma=0.3).SGD()
+        #Initilize theta from SGD
+        self.theta = StochasticGradientDecent(x, y, n_epoc = self.n_epochs, M = self.categories, n=np.size(self.input), gamma=0.3).SGD()
 
         #Allows other activation function for hidden layer
         if activation_func_hidden == "sigmoid":
@@ -118,8 +119,8 @@ class FeedForwardNeuralNetwork(object):
         self.grad_bias_hidden = np.sum(self.error_in_hidden, axis=0)
 
         if self.lmbda > 0:
-            self.grad_weight_out += self.lmbda * self.out_weights
-            self.grad_weight_hidden += self.lmbda * self.h_weights
+            self.grad_weight_out += self.lmbda * self.out_weights*self.theta[0]#might delete theta
+            self.grad_weight_hidden += self.lmbda * self.h_weights*self.theta[1]#might delete theta
 
         self.out_weights -= self.eta*self.grad_weight_out
         self.out_bias -= self.eta*self.grad_bias_out
