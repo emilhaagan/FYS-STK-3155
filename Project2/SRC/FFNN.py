@@ -79,6 +79,10 @@ class FeedForwardNeuralNetwork(object):
     def tanh(self, x):
 	    return (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
 
+    #ReLU activation function
+    def relu(x):
+        return np.maximum(0,x)
+
     def ff(self):
         #Feed forward for network saved globaly in class
         self.z_hidden = np.matmul(X, self.h_weights) + self.h_bias
