@@ -84,14 +84,6 @@ class NeuralNetwork(object):
     def relu(x):
         return np.maximum(0,x)
 
-    def cost_MSE(y, y_h):
-        n = np.size(y)
-        C = 0
-        for i in range(n):
-            C += (y[i] - y_h[i])^2
-        return 1/n * C
-
-
     def ff(self):
         #Feed forward for network saved globaly in class
         self.z_hidden = np.matmul(X, self.h_weights) + self.h_bias
