@@ -31,14 +31,11 @@ class NeuralNetwork(object):
         #Allows other activation function for hidden layer
         if activation_func_hidden == "sigmoid":
             self.activation_func_hidden = self.sigmoid
-        elif activation_func_hidden != "sigmoid":
-            self.activation_func_hidden = activation_func_hidden
-
         #Allows other activation function for output layer
-        if activation_func_out == "tanh":
+        elif activation_func_out == "tanh":
             self.activation_func_out = self.tanh
-        elif activation_func_out != "tanh":
-            self.activation_func_out = activation_func_out
+        elif activation_func_out == "relu":
+            self.activation_func_out = self.relu
 
         #Creating bias and weight by running function
         self.crt_b_w()
@@ -81,14 +78,14 @@ class NeuralNetwork(object):
 	    return (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
 
     #ReLU activation function
-    def relu(x):
+    def relu(self, x):
         return np.maximum(0,x)
 
-    def cost_MSE(y, y_h):
+    def cost_MSE(self y_h):
         n = np.size(y)
         C = 0
         for i in range(n):
-            C += (y[i] - y_h[i])^2
+            C += (self.Y_full[i] - y_h[i])**2
         return 1/n * C
 
 
