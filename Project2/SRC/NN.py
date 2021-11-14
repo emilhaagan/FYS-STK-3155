@@ -316,6 +316,8 @@ class Method():
 
     def __init__(self):
         self.layer = []
+        self.train_acc = None
+        self.test_acc = None
 
     def add_to_list(self, layer):
         self.layer.append(layer)
@@ -353,7 +355,7 @@ class Method():
         self.loss.remember_training_layer(self.tlayer)
 
 
-    def train(self, X, y, *, n_epoc = 1, validation_data = None):
+    def train(self, X, y, *, n_epoc = 1, validation_data = None, print_epoch = False):
 
         self.accuracy.init(y)
 
@@ -374,12 +376,17 @@ class Method():
                 self.optimiz.up_par(layer)
             self.optimiz.post_up_par()
 
-            print(f'n_epoch: {epochs}, ' +
-                  f'accuracy: {accuracy:.3f}, ' +
-                  f'loss: {loss:.3f} (' +
-                  f'loss in data: {loss_dat:.3f}, ' +
-                  f'loss in reglarization: {reg_loss:.3f}), ' +
-                  f'learningrate: {self.optimiz.cur_lr}')
+            if print_epoch:
+                print(f'n_epoch: {epochs}, ' +
+                      f'accuracy: {accuracy:.3f}, ' +
+                      f'loss: {loss:.3f} (' +
+                      f'loss in data: {loss_dat:.3f}, ' +
+                      f'loss in reglarization: {reg_loss:.3f}), ' +
+                      f'learningrate: {self.optimiz.cur_lr}')
+
+            if epochs == n_epoc:
+                self.train_acc = accuracy
+
 
         if validation_data is not None:
 
@@ -393,9 +400,14 @@ class Method():
 
             accuracy = self.accuracy.cal(predict, y_val)
 
-            print(f'validation, ' +
-                  f'acc: {accuracy:.3f}, ' +
-                  f'loss: {loss:.3f}')
+            self.test_acc = accuracy
+
+            if print_epoch:
+                print(f'validation, ' +
+                      f'acc: {accuracy:.3f}, ' +
+                      f'loss: {loss:.3f}')
+
+        return self.train_acc, self.test_acc
 
 
     def forward(self, X, train):
@@ -446,4 +458,4 @@ model.set_param(
 model.finall()
 
 # Train the model
-model.train(X_train, y_train, validation_data=(X_test, y_test), n_epoc=200)
+model.train(X_train, y_train, validation_data=(X_test, y_test), n_epoc=200, print_epoch = True)
