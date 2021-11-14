@@ -1,15 +1,423 @@
-import numpy as np
+import autograd.numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import SGDRegressor
+from autograd import grad
+from autograd import elementwise_grad as egrad  # for functions that vectorize over inputs
+from sklearn import linear_model
+
+"""Initializing for weights an biases for flexible number of layers with number of imputs and amount of neurons or hidden layers."""
+class Layer():
+  def __init__(self, num_inputs, neurons, lmbd = 0):
+    # Initialize weights and biases
+    self.num_inputs = num_inputs
+    self.neurons = neurons
+    self.weights = 0.01 + np.random.normal(self.num_inputs, self.neurons) #with normal distribution
+    self.bias = np.zeros(self.neurons)
+
+    # Set strength of regularization, the regularizer should be greater than or equal to 0
+    self.weight_regularizer_l2 = lmbd
+
+  def forward(self, input):
+    self.input = input
+
+    #Calculate output value from previous layer's inputs, weights and biases
+    self.out = np.matmul(input, self.weights) + self.bias
+
+  def back(self, d_val):
+    # gradients on weights and biases
+    self.grad_weights = np.matmul(self.input.t, d_val)
+    self.grad_bias = np.sum(d_val, axis=0, keepdim=True)
+
+    #L2 regularization on weights
+    if self.weight_regularizer_l2 > 0:
+      self.grad_weights += self.weight_regularizer_l2 * self.weights
+
+    #Gradient on inputs
+    self.grad_input = np.matmul(d_val, self.weights.T)
+
+  def predict(self):
+    pass
+
+class Layer_Input:
+  def forward(self, input):
+    self.out = input
+
+
+class Activ_Sigmoid():
+  def forward(self, input):
+    self.input = input
+
+    self.out =  1/(1 + np.exp(-input))
+
+  def back(self, d_val):
+    self.grad_input = d_val * (1 - self.self.out) * self.out
+
+  def predict(self, out):
+    return (out > 0.5) * 1
+
+class Activ_Leaky_ReLU():
+  def forward(self, input):
+    self.input = input
+
+    self.out = np.max(0.01 * input, input)
+
+  def back(self, d_val):
+
+    self.grad_input = d_val.copy()
+
+    self.grad_input[self.input <= 0] = 0
+
+class Activ_ReLU():
+  def forward(self, input):
+    self.input = input
+
+    self.out = np.max(0, input)
+
+  def back(self, d_val):
+
+    self.grad_input = d_val.copy()
+
+  def predict(self, out):
+    return out
+
+class Activ_Linear():
+  def forward(self, input):
+    self.input = input
+    self.out = input
+
+  def back(self, d_val):
+    self.grad_input = d_val.copy()
+
+  def predict(self, out):
+    return out
+
+
+class Activ_tanh():
+  def forward(self, input):
+    self.input = input
+
+    self.out  = (np.exp(input) - np.exp(-input)) / (np.exp(input) + np.exp(-input))
+
+  def back(self, d_val):
+    self.grad_input = d_val.copy()
+
+    self.grad_input = 1-self.out**2
+
+
+class Optim_SGD():
+
+  def __init__(self, momentum = 0.3, decay = 0.01, lr = 1):
+    self.momentum = momentum
+    self.lr = lr
+    self.decay = decay
+
+    self.cur_lr = lr
+    self.iter = 0
+
+  def pre_up_par(self):
+    if self.decay:
+      self.cur_lr = self.lr * (1 / (1 + self.decay * self.iter))
+
+  def up_par(self, layer):
+    if self.momentum:
+      #If layer dont consist of momentum we create them
+      if not hasattr(layer, "weight_moment"):
+        layer.bias_moment = np.zeros_like(layer.bias)
+
+      #Creating weight updates
+      weight_up = self.momentum * layer.weight_moment - self.cur_lr*layer.grad_weights
+      layer.weight_moment = weight_up
+
+      #Creating bias updates
+      bias_up = self.momentum * layr.bias_moment - self.cur_lr * layer.grad_bias
+      layer.bias_moment = bias_up
+
+    else:
+      weight_up = -self.cur_lr * layer.grad_weights
+
+      bias_up = -self.cur_lr * layer.grad_bias
+
+    layer.weights += weight_up
+    layer.bias += bias_up
+
+  def post_up_par(self):
+    self.iter += 1
+
+
+
+class Loss:
+  def reg_loss(self):
+    #initialize regularization loss
+    reg_loss = 0
+
+    #calculate regularization loss for each the training layer
+    for layer in self.training_layer:
+      # L2 regularization - weights
+      if layer.weight_regularizer_l2 > 0 :
+        reg_loss += layer.weight_regularizer_l2 * np.sum(layer.weights * layer.weights)
+
+    return reg_loss
+
+  def remember_training_layer(self, training_layer):
+    self.training_layer = training_layer
+
+  #calculate losses from data and regularization with model output and true values
+  def cal(self, out, y, *, regularization=False):
+    #loss from sample
+    samp_loss = self.forward(out, y)
+    #mean loss
+    loss_dat = np.mean(samp_loss)
+
+    #record the accumulated sum of losses and sample count
+    self.accum_sum += np.sum(samp_losses)
+    self.accum_count += len (samp_losses)
+
+    if not regularization:
+      return loss_dat
+
+    return loss_dat, self.reg_loss()
+
+  # Calculates accumulated loss
+  def cal_accum( self , * , regularization = False):
+    # mean loss
+    loss_dat = self.accum_sum / self.accum_count
+
+    if not include_regularization:
+      return loss_dat
+
+    return loss_dat, self.reg_loss()
+
+  # Reset variables for accumulated loss
+  def reset_var(self):
+    self.accum_sum = 0
+    self.accum_count = 0
+
+# Categorical Cross-entropy loss
+class Loss_CC(Loss):
+
+  def forward(self, predict, y_real):
+    #size of each batch
+    sample = len(predict)
+
+    # Clip data to avoid denominator of 0
+    predict_clip = np.clip(predict, 1e-8, 1 - 1e-8)
+
+    #Probabilities for target values of categorical labels
+    if len(y_real.shape) == 1:
+      cc = predict_clip[range(sample), y_real]
+
+    elif len(y_real.shape) == 2:
+      cc = np.sum(predict_clip * y_real, axis = 1)
+
+    nll = -np.log(cc)
+    return nll
+
+  def back(self, d_val, y_real):
+    sample = len(d_val)
+
+    lab = len(d_val[0])
+
+    if len(y_real.shape) == 1:
+      y_real = np.eye(lab)[y_real]
+
+    #Claculate and normalize
+    self.grad_input = (-y_real/d_val)/sample
+
+class Loss_MSE(Loss):
+
+  def forwar(self, predict, y_real):
+    samp_loss = np.mean((y_real - predict)**2, axis=-1)
+
+    return samp_loss
+
+  def backward(self, d_val, y_real):
+    sample = len(d_val)
+
+    out = len(d_val[0])
+
+    #Claculate and normalize
+    self.grad_input = (-2 * (y_real - d_val) / out) / sample
+
+
+class Method():
+
+  def __init__(self):
+    self.layer = []
+
+  def add_to_list(self, layer):
+    self.layer.append(layer)
+
+  def set_param(self, *, loss, accuracy, optimiz):
+    self.optimiz = optimiz
+    self.accuracy = accuracy
+    self.loss = loss
+
+  def finall(self):
+    self.layer_inp = Layer_Input()
+
+    layer_iter = len(self.layer)
+    self.tlayer = []
+
+    for i in range(layer_iter):
+      if i == 0:
+        self.layer[i].prev = self.layer_inp
+        self.layer[i].next = self.layer[i+1]
+
+      elif i < layer_iter - 1:
+        self.layer[i].prev = self.layer[i-1]
+        self.layer[i].next = self.layer[i+1]
+
+      else:
+        self.layer[i].prev = self.layer[i-1]
+        self.layer[i].next = self.loss
+        self.activ_out = self.layer[i]
+
+
+      if hasattr(self.layer[i], "weights"):
+        self.tlayer.append(self.layer[i])
+
+  def comp(self, predict, y):
+
+    if len(y.shape) == 2:
+      y = np.argmax(y, axis=1)
+
+    return predict == y
+
+
+  def cal(self, predict, y):
+
+    comp = self.comp(predict, y)
+    accuracy = np.mean(comp)
+    return accuracy
+
+
+
+  def train(self, X, y, *, n_epoc = 100, validation_data = None):
+
+    self.accuracy.init(y)
+
+    for epochs in range(1, n_epoc):
+      #reset accumulated loss and accuracy
+      self.loss.reset_var()
+      self.loss.reset_var()
+
+      out = self.forward(X)
+
+      loss_dat, reg_loss = self.loss.cal(out, y)
+      loss = loss_dat + reg_loss
+
+      predict = self.activ_out.predict(out) #??
+      accuracy = self.accuracy.cal(predict, y)
+      self.back(out, y)
+
+      self.optimiz.pre_up_par()
+
+      for layer in self.tlayer:
+        self.optimiz.up_par(layer)
+        self.optimiz.post_up_par()
+
+        print(f'n_epoch: {epochs}, ' +
+          f'accuracy: {accuracy:.3f}, ' +
+          f'loss: {loss:.3f} (' +
+          f'loss in data: {loss_dat:.3f}, ' +
+          f'loss in reglarization: {loss_reg:.3f}), ' +
+          f'learningrate: {self.optimiz.cur_lr}')
+
+
+    def forward(self, X, train):
+      self.layer_inp.forward(X, train)
+
+
+      for layer in self.layer:
+        layer.forward(layer.prev.out, train)
+      return layer.out
+
+    def back(self, out, y):
+
+      self.loss.back(out, y)
+      for layer in reversed(self.layer):
+        layer.back(layer.next.grad_input)
+
+
+
+class Accuracy:
+  def __init__(self, predict, y):
+
+    self.predict = predict
+    self.y = y
+
+  def cal(self, predict, y):
+    # Get comparison results
+    comparisons = self.compare(predict, y)
+
+    acc = np.mean(comparisons)
+
+    # Add accumulated sum of matching values and sample count
+    self.accum_sum += np.sum(comparisons)
+    self.accum_count += len(comparisons)
+
+    return acc
+
+  def cal_accum(self):
+    acc = self.accum_sum / self.accum_count
+    return acc
+
+  # Reset variables for accumulated accuracy
+  def reset_var(self):
+    self.accum_sum = 0
+    self.accum_count = 0
+
+class Accuracy_Classification(Accuracy):
+
+  #def init(self, y):
+  #  pass
+
+  # Compares predictions to the ground truth values
+  def compare(self, predict , y):
+    if len(y.shape) == 2:
+      y = np.argmax(y, axis = 1)
+    return predict == y
+
+class Accuracy_Regression(Accuracy):
+  def __init__(self, y):
+      pass
+
+  # Compares predictions to the ground truth values
+  def compare(self, predict , y):
+    return np.absolute(predict - y)
+
+
+
+from sklearn.datasets import load_breast_cancer
+data = load_breast_cancer()
+X = data['data']
+y = data['target']
+
 from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+#Feature Scaling
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
 
+# Instantiate the model
+model = Method()
+# Add layers
+model.add_to_list(Layer(30, 32, lmbd=5e-4))
+model.add_to_list(Activ_ReLU())
+model.add_to_list(Layer(32, 2))
+model.add_to_list(Activ_ReLU())
 
+# Set loss, optimizer and accuracy objects
+model.set_param(
+    loss=Loss_CC(),
+    optimiz=Optim_SGD(lr=0.05, decay=5e-5, momentum=0.9),
+    accuracy=Accuracy_Classification()
+)
 
-def train_test_split(inputs, labels, train_size = 0.8):
+# Finalize the model
+model.finall()
 
-    labels = to_categorical(labels)
-
-    # split into train and test data
-    test_size = 1 - train_size
-    X_train, X_test, Y_train, Y_test = train_test_split(inputs, labels, train_size=train_size,
-                                                        test_size=test_size)
-
-    return X_train, X_test, Y_train, Y_test
+# Train the model
+model.train(X_train, y_train, validation_data=(X_test, y_test), n_epoc=1000)

@@ -35,7 +35,7 @@ class NeuralNetwork(object):
         elif activation_func_out == "tanh":
             self.activation_func_out = self.tanh
         elif activation_func_out == "relu":
-            self.activation_func_out = self.relu
+            self.activation_func_out = self.re
 
         #Creating bias and weight by running function
         self.crt_b_w()
@@ -87,7 +87,6 @@ class NeuralNetwork(object):
         for i in range(n):
             C += (self.Y_full[i] - y_h[i])**2
         return 1/n * C
-
 
     def ff(self):
         #Feed forward for network saved globaly in class
