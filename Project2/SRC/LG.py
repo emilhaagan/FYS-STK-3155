@@ -154,5 +154,5 @@ X_test = sc.transform(X_test).T
 y_train = y_train.reshape((1,y_train.shape[0]))
 y_test = y_test.reshape((1,y_test.shape[0]))
 
-lg = Logistic_Regression()
+lg = Logistic_Regression(learning_rate = 0.2, n_iter = 1000)
 output = lg.train(X_train, y_train, X_test, y_test)
