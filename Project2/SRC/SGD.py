@@ -19,7 +19,7 @@ class StochasticGradientDecent(object):
         #size of each minibatch
         self.M = M
         self.n = n
-        self.gamma = 0.3
+        self.gamma = gamma
         #Some initial conditions
         #nunber of minibatch
         self.m = int(self.n/self.M)
