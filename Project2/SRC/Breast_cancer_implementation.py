@@ -76,7 +76,7 @@ def run_NN(X, y, active = "ReLU"):
                 model.add_to_list(Layer(64, 2))
                 model.add_to_list(Activ_Softmax())
 
-            elif active == "tanh":
+            elif active == "Tanh":
                 # Add layers tanh
                 model.add_to_list(Layer(30, 64, lmbd=lm))
                 model.add_to_list(Activ_tanh())
@@ -139,7 +139,7 @@ def run_NN(X, y, active = "ReLU"):
 
 
 start = timeit.default_timer()
-run_NN(X, y, active = "Leaky_ReLU")
+run_NN(X, y, active = "Tanh")
 stop = timeit.default_timer()
 print('Time: ', stop - start)
 
