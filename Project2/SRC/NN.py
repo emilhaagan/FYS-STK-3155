@@ -106,6 +106,9 @@ class Activ_tanh():
         self.grad_input = d_val.copy()
 
         self.grad_input = 1-self.out**2
+        
+    def predict(self, out):
+        return out
 
 class Activ_Softmax():
 
@@ -376,6 +379,7 @@ class Method():
                 self.optimiz.up_par(layer)
             self.optimiz.post_up_par()
 
+            """
             if print_epoch:
                 print(f'n_epoch: {epochs}, ' +
                       f'accuracy: {accuracy:.3f}, ' +
@@ -383,6 +387,7 @@ class Method():
                       f'loss in data: {loss_dat:.3f}, ' +
                       f'loss in reglarization: {reg_loss:.3f}), ' +
                       f'learningrate: {self.optimiz.cur_lr}')
+            """
 
             if epochs == n_epoc:
                 self.train_acc = accuracy
