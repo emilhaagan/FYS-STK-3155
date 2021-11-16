@@ -2,12 +2,17 @@ import numpy as np
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# ensure the same random numbers appear every time
+np.random.seed(100)
 
 class Logistic_Regression:
 
-    def __init__(self, learning_rate = 1, n_iter = 2000):
+    def __init__(self, learning_rate = 1, lamda = 0, n_iter = 2000):
         self.lr = learning_rate
-
+        self.regularizer_l2 = lamda
         self.n_iter = n_iter
         self.weights = []
         self.bias = 0
@@ -21,21 +26,21 @@ class Logistic_Regression:
         s = 1/(1 + np.exp(-z))
         return s
 
-    def assumption(self, weights, X, bias):
-        assum = self.sigmoid(np.dot(weights.T, X) + bias)
-        return assum
+    def probability(self, weights, X, bias):
+        prob = self.sigmoid(np.dot(weights.T, X) + bias)
+        return prob
 
-    def cost(self, assum, y, num_sample):
-        #print(assum.shape)
+    def cost(self, prob, y, num_sample, weights):
+        #print(prob.shape)
         #print(y.shape)
-        cost = -np.sum(y * np.log(assum) + (1-y) * np.log(1-assum)) / num_sample
+        cost = -np.sum(y * np.log(prob) + (1-y) * np.log(1-prob)) / num_sample + self.regularizer_l2 * np.sum(weights**2)
         #cost = np.squeeze(cost)
         return cost
 
-    def grad_cal(self, weights, assum, X, y):
+    def grad_cal(self, weights, prob, X, y):
         num_sample = X.shape[1]
-        grad_weights = np.dot(X,(assum-y).T) / num_sample
-        grad_bias = np.sum(assum-y) / num_sample
+        grad_weights = np.dot(X,(prob-y).T) / num_sample
+        grad_bias = np.sum(prob-y) / num_sample
         grads = {
             "grad_weights": grad_weights,
             "grad_bias": grad_bias
@@ -44,9 +49,9 @@ class Logistic_Regression:
 
     def model_status(self, weights, bias, X, y):
         num_sample = X.shape[1]
-        assum = self.assumption(weights, X, bias)
-        cost = self.cost(assum, y, num_sample)
-        grads = self.grad_cal(weights, assum, X, y)
+        prob = self.probability(weights, X, bias)
+        cost = self.cost(prob, y, num_sample, weights)
+        grads = self.grad_cal(weights, prob, X, y)
         return grads, cost
 
     #weights and bias was optimized by stochastic gradient descent algorithm with momentum
@@ -94,10 +99,10 @@ class Logistic_Regression:
         weights = self.weights.reshape(X.shape[0], 1)
         bias = self.bias
 
-        assum = self.assumption(weights, X, bias)
+        prob = self.probability(weights, X, bias)
 
-        for i in range(assum.shape[1]):
-            if assum[0,i] >= 0.5:
+        for i in range(prob.shape[1]):
+            if prob[0,i] >= 0.5:
                 y_pred[0,i] = 1
             else:
                 y_pred[0,i] = 0
