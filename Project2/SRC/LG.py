@@ -10,12 +10,14 @@ np.random.seed(100)
 
 class Logistic_Regression:
 
-    def __init__(self, learning_rate = 1, lamda = 0, n_iter = 2000):
+    def __init__(self, learning_rate = 1, lamda = 0, n_iter = 200):
         self.lr = learning_rate
         self.regularizer_l2 = lamda
         self.n_iter = n_iter
         self.weights = []
         self.bias = 0
+        self.data_cost = []
+        self.reg_cost = []
 
     def wb_init(self, dim):
         weights = np.zeros((dim,1))
@@ -31,10 +33,21 @@ class Logistic_Regression:
         return prob
 
     def cost(self, prob, y, num_sample, weights):
-        #print(prob.shape)
-        #print(y.shape)
-        cost = -np.sum(y * np.log(prob) + (1-y) * np.log(1-prob)) / num_sample + self.regularizer_l2 * np.sum(weights**2)
-        #cost = np.squeeze(cost)
+        data_cost = np.mean(-np.sum(y * np.log(prob) + (1-y) * np.log(1-prob)))
+        self.data_cost.append(data_cost)
+
+        reg_cost = 0
+        if self.regularizer_l2 > 0:
+            reg_cost = self.regularizer_l2 * np.sum(weights**2)
+            self.reg_cost.append(reg_cost)
+
+        #print("data_cost", data_cost)
+        #print("reg_cost", reg_cost)
+
+
+        cost = data_cost + reg_cost
+        #print("cost", cost)
+
         return cost
 
     def grad_cal(self, weights, prob, X, y):
@@ -50,7 +63,8 @@ class Logistic_Regression:
     def model_status(self, weights, bias, X, y):
         num_sample = X.shape[1]
         prob = self.probability(weights, X, bias)
-        cost = self.cost(prob, y, num_sample, weights)
+        prob_clip = np.clip(prob, 1e-8, 1 - 1e-8)
+        cost = self.cost(prob_clip, y, num_sample, weights)
         grads = self.grad_cal(weights, prob, X, y)
         return grads, cost
 
@@ -58,10 +72,9 @@ class Logistic_Regression:
     def sgd(self, weights, bias, X, y, print_cost = False):
         costs = []
 
-        for i in range(self.n_iter+1):
+        for i in range(self.n_iter):
 
             grads, cost = self.model_status(weights, bias, X, y)
-
             grad_weights = grads["grad_weights"]
             grad_bias = grads["grad_bias"]
 
@@ -69,13 +82,11 @@ class Logistic_Regression:
             weights = weights - self.lr * grad_weights
             bias = bias - self.lr * grad_bias
 
-
             #record cost
-            if i % 100 == 0:
-                costs.append(cost)
+            costs.append(cost)
 
             #print cost every 100 training epoch
-            if print_cost and i % 100 == 0:
+            if print_cost:
                 print ("Cost after iteration %i: %f" %(i, cost))
 
         parameters = {
@@ -113,7 +124,7 @@ class Logistic_Regression:
         accuracy = 100 - np.mean(np.abs(y_pred - y)) * 100
         return accuracy
 
-    def train(self, X_train, y_train, X_test, y_test, print_cost = True):
+    def train(self, X_train, y_train, X_test, y_test, print_cost = False, print_score = False):
         #initilize parameters with normal distribution
         weights, bias = self.wb_init(X_train.shape[0])
 
@@ -129,12 +140,14 @@ class Logistic_Regression:
 
         train_acc = self.accuracy(y_pred_train, y_train)
         test_acc = self.accuracy(y_pred_test, y_test)
-
-        print ("train accuracy: %f" %(train_acc))
-        print ("test accuracy: %f" %(test_acc))
+        if print_score:
+            print ("train accuracy: %f" %(train_acc))
+            print ("test accuracy: %f" %(test_acc))
 
         output = {
             "costs": costs,
+            "data_cost": self.data_cost,
+            "reg_cost": self.reg_cost,
             "y_pred_train": y_pred_train,
             "y_pred_test": y_pred_test,
             "weights": self.weights,
@@ -159,5 +172,51 @@ X_test = sc.transform(X_test).T
 y_train = y_train.reshape((1,y_train.shape[0]))
 y_test = y_test.reshape((1,y_test.shape[0]))
 
-lg = Logistic_Regression(learning_rate = 0.2, n_iter = 1000)
-output = lg.train(X_train, y_train, X_test, y_test)
+#set up learning rate eta and regularization lambda for grid search
+lr = np.logspace(-5, 1, 7)
+lmbd = np.logspace(-5, 1, 7)
+
+train_accuracy = np.zeros((len(lr), len(lmbd)))
+test_accuracy = np.zeros((len(lr), len(lmbd)))
+
+# grid search
+for i, eta in enumerate(lr):
+    for j, lm in enumerate(lmbd):
+        # Instantiate the model
+        lg = Logistic_Regression(learning_rate = eta, lamda = lm)
+        out = lg.train(X_train, y_train, X_test, y_test)
+
+        train_accuracy[i][j] = out['train accuracy']
+        test_accuracy[i][j] = out['test accuracy']
+
+fig, ax = plt.subplots(figsize = (10, 10))
+sns.heatmap(train_accuracy, annot=True, ax=ax, cmap="viridis")
+ax.set_title("Training Accuracy of our own LG" )
+ax.set_ylabel("$\eta$")
+ax.set_xlabel("$\lambda$")
+plt.savefig('../Results/eta_lmd_train_acc_LG.png')
+
+fig, ax = plt.subplots(figsize = (10, 10))
+sns.heatmap(test_accuracy, annot=True, ax=ax, cmap="viridis")
+ax.set_title("Test Accuracy of our own LG")
+ax.set_ylabel("$\eta$")
+ax.set_xlabel("$\lambda$")
+plt.savefig('../Results/eta_lmd_test_acc_LG.png')
+
+#plot the cost based on the incresing epochs
+lg = Logistic_Regression(n_iter = 2000, lamda = 1)
+d = lg.train(X_train, y_train, X_test, y_test)
+
+costs = d["costs"]
+data_cost = d["data_cost"]
+reg_cost = d["reg_cost"]
+x = np.linspace(0, len(data_cost), len(data_cost))
+fig = plt.figure()
+plt.plot(x, data_cost, label = "data_cost")
+plt.plot(x, reg_cost, label = "reg_cost")
+plt.plot(x, costs, label = "costs")
+fig.suptitle('Training cost')
+plt.xlabel('Epoch')
+plt.ylabel('cost')
+plt.legend()
+plt.savefig('../Results/costs_epoch_LG.png')
