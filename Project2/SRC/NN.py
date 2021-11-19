@@ -444,23 +444,30 @@ sc = StandardScaler()
 X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
-# Instantiate the model
-model = Method()
-# Add layers
-model.add_to_list(Layer(30, 32, lmbd=5e-4))
-model.add_to_list(Activ_ReLU())
-model.add_to_list(Layer(32, 2))
-model.add_to_list(Activ_Softmax())
+n_neurons = 1024
+train_accuracy = []
+test_accurary = []
+for n in range(n_neurons):
 
-# Set loss, optimizer and accuracy objects
-model.set_param(
-    loss=Loss_CC(),
-    optimiz=Optim_SGD(lr=0.05, decay=5e-5, momentum=0.9),
-    accuracy=Accuracy_Classification()
-)
+    # Instantiate the model
+    model = Method()
+    # Add layers
+    model.add_to_list(Layer(30, n, lmbd=5e-4))
+    model.add_to_list(Activ_ReLU())
+    model.add_to_list(Layer(n, 2))
+    model.add_to_list(Activ_Softmax())
 
-# Finalize the model
-model.finall()
+    # Set loss, optimizer and accuracy objects
+    model.set_param(
+        loss=Loss_CC(),
+        optimiz=Optim_SGD(lr=0.05, decay=5e-5, momentum=0.9),
+        accuracy=Accuracy_Classification()
+    )
 
-# Train the model
-model.train(X_train, y_train, validation_data=(X_test, y_test), n_epoc=200, print_epoch = True)
+    # Finalize the model
+    model.finall()
+
+    # Train the model
+    train_acc, test_acc = model.train(X_train, y_train, validation_data=(X_test, y_test), n_epoc=200, print_epoch = True)
+    train_accuracy.append(train_acc)
+    test_accurary.append(test_acc)
