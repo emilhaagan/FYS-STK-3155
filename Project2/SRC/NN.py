@@ -106,7 +106,7 @@ class Activ_tanh():
         self.grad_input = d_val.copy()
 
         self.grad_input = 1-self.out**2
-        
+
     def predict(self, out):
         return out
 

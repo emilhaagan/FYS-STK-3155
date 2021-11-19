@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 import seaborn as sns
 import numba as nb
 import timeit
