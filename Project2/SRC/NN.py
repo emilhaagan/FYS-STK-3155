@@ -444,7 +444,7 @@ sc = StandardScaler()
 X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
-n_neurons = 1024
+n_neurons = 100
 train_accuracy = []
 test_accurary = []
 for n in range(n_neurons):
@@ -468,6 +468,16 @@ for n in range(n_neurons):
     model.finall()
 
     # Train the model
-    train_acc, test_acc = model.train(X_train, y_train, validation_data=(X_test, y_test), n_epoc=200, print_epoch = True)
+    train_acc, test_acc = model.train(X_train, y_train, validation_data=(X_test, y_test), n_epoc=200, print_epoch = False)
     train_accuracy.append(train_acc)
     test_accurary.append(test_acc)
+
+x = range(n_neurons)
+fig = plt.figure()
+plt.plot(x, train_accuracy, label = "train_accuracy")
+plt.plot(x, test_accurary, label = "test_accurary")
+fig.suptitle('Accuracy of train and test dataset with different number of neurons in the hidden layer')
+plt.xlabel('Number of neurons')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.savefig('../Results/acc_n_nruons_NN.png')
