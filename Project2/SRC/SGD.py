@@ -1,5 +1,5 @@
 
-#import numpy as np
+import numpy as npn
 import autograd.numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor
@@ -125,8 +125,12 @@ def ols(x, y, z, degree = 5):
     xyb_ = np.c_[x, y]
     poly = PolynomialFeatures(degree)
     xyb = poly.fit_transform(xyb_)
+
     #Change from inverse to SGD
-    beta = StochasticGradientDecent(xyb.T.dot(xyb), z).SGD().dot(xyb.T).dot(z)
+    #print("SGD=",np.shape(StochasticGradientDecent(x = (xyb.T.dot(xyb)), y=z).SGD()))
+    #beta = (StochasticGradientDecent(x = (xyb.T.dot(xyb)), y=z).SGD()).dot(xyb.T).dot(z)
+    #beta = StochasticGradientDecent(x = xyb, y=z).SGD().dot(xyb.T).dot(z)
+    beta = StochasticGradientDecent(x, y).SGD().dot(xyb.T).dot(z)
     #beta = np.linalg.inv(xyb.T.dot(xyb)).dot(xyb.T).dot(z)
 
     return beta
@@ -148,7 +152,8 @@ def RidgeRegression(x, y, z, degree=5, l=0.0001):
     A = np.arange(1, degree + 2)
     rows = np.sum(A)
     #Change from inverse to SGD
-    beta = (StochasticGradientDecent(M.T.dot(M) + l * np.identity(rows), z)).SGD().dot(M.T).dot(z)
+    #beta = (StochasticGradientDecent(x = (M.T.dot(M) + l * np.identity(rows)), y=y).SGD()).dot(M.T).dot(z)
+    beta = (StochasticGradientDecent(x = (M.T.dot(M) + l * np.identity(rows)), y=y).SGD()).dot(M.T).dot(z)
 
     return beta
 
@@ -261,7 +266,7 @@ class StochasticGradientDecent(object):
 
     #gradient
     def gradient(self, x, y, theta):
-        return (2.0/self.M)*x.T @ ((x @ theta) - y)
+        return (2.0/self.M)*x.T @ ((x @ theta) - y).T
 
     #This the learning scheduel for eta
     def ls(self, t):
@@ -273,7 +278,7 @@ class StochasticGradientDecent(object):
 
 
     def SGD(self):
-        X = np.c_[np.ones((n,1)), self.x_full]
+        X = np.c_[np.ones((len(self.x_full),1)), self.x_full]
         #size_matrix = x.shape[0]
         self.theta = np.random.randn(X.shape[1],1) #Initilize theta for matrix shape.
 
@@ -285,7 +290,7 @@ class StochasticGradientDecent(object):
             for k in range(self.m):
                 random_index = self.M*np.random.randint(self.m)
                 xi = X[random_index:random_index+self.M]
-                yi = y[random_index:random_index+self.M]
+                yi = self.y_full[random_index:random_index+self.M]
 
                 eta = self.ls(epoc*self.m+k) #Calling function to cal. eta
 
@@ -293,7 +298,7 @@ class StochasticGradientDecent(object):
                 #self.v_ = gamma*self.v_ + eta*gradient(x_iter, y_iter, self.theta - gamma*self.v_) #Cal. v where gradient is from autograd
                 place_hold = self.theta + self.gamma*self.v_
                 x_grad = egrad(self.gradient, 2) #Gradient with respect to theta
-                self.v_ = self.gamma*self.v_ + eta * self.gradient(xi, yi, self.theta) * x_grad(xi, yi, place_hold) #Cal. v where gradient is from autograd
+                self.v_ = self.gamma*self.v_ + eta * x_grad(xi, yi, place_hold) #Cal. v where gradient is from autograd,  self.gradient(xi, yi, self.theta)
                 self.theta = self.theta - self.v_ #Theta +1 from this itteration of theta and v
 
         return self.theta
@@ -449,6 +454,9 @@ for i in range(0, num_rows):
 xt = X[:,0, np.newaxis]
 yt = X[:,1, np.newaxis]
 zt = X[:,2, np.newaxis]
+
+
+
 
 degree = [2, 4, 6, 8]
 text_file = open("../Results/SGD/terrain_CI_ols.txt", "w")
