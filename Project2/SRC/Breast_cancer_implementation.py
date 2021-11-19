@@ -91,18 +91,18 @@ def run_NN(X, y, active = "ReLU"):
                 model.add_to_list(Layer(30, 64, lmbd=lm))
                 model.add_to_list(Activ_Sigmoid())
                 model.add_to_list(Layer(64, 64, lmbd=lm))
-                model.add_to_list(Activ_tanh())
+                model.add_to_list(Activ_Sigmoid())
                 model.add_to_list(Layer(64, 2))
-                model.add_to_list(Activ_Softmax())
+                model.add_to_list(Activ_tanh())
 
             elif active == "sigmoid_ReLU":
                 # Add layers sigmoid and ReLU
                 model.add_to_list(Layer(30, 64, lmbd=lm))
                 model.add_to_list(Activ_Sigmoid())
                 model.add_to_list(Layer(64, 64, lmbd=lm))
-                model.add_to_list(Activ_ReLU())
+                model.add_to_list(Activ_Sigmoid())
                 model.add_to_list(Layer(64, 2))
-                model.add_to_list(Activ_Softmax())
+                model.add_to_list(Activ_ReLU())
 
 
             # Set loss, optimizer and accuracy objects
