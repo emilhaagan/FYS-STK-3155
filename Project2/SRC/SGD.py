@@ -7,6 +7,216 @@ from autograd import grad
 from autograd import elementwise_grad as egrad  # for functions that vectorize over inputs
 from autograd import holomorphic_grad as hgrad
 from sklearn import linear_model
+#from AnalysisFunctions import *
+from sklearn.preprocessing import PolynomialFeatures
+import matplotlib.pyplot as plt
+from matplotlib import cm
+
+"""
+Analasys functions from project 1
+"""
+
+def FrankeFunction(x,y, noise = 0):
+    term1 = 0.75*np.exp(-(0.25*(9*x-2)**2) - 0.25*((9*y-2)**2))
+    term2 = 0.75*np.exp(-((9*x+1)**2)/49.0 - 0.1*(9*y+1))
+    term3 = 0.5*np.exp(-(9*x-7)**2/4.0 - 0.25*((9*y-3)**2))
+    term4 = -0.2*np.exp(-(9*x-4)**2 - (9*y-7)**2)
+    return (term1 + term2 + term3 + term4 + noise*np.random.randn(len(x)))
+
+
+def R2(zReal, zPredicted):
+    """
+    :param zReal: actual z-values, size (n, 1)
+    :param zPredicted: predicted z-values, size (n, 1)
+    :return: R2-score
+    """
+    R2 = 1 - (np.sum((zReal - zPredicted)**2)/np.sum((zReal - np.mean(zReal))**2))
+    return R2
+
+def MeanSquaredError(zReal, zPredicted):
+    """
+    :param zReal: actual z-values, size (n, 1)
+    :param zPredicted: predicted z-values, size (n, 1)
+    :return: Mean squared error
+    """
+    MSE = np.sum((zReal - zPredicted)**2)/len(z)
+    return MSE
+
+def betaCI_OLS(zReal, beta_mean, X):
+    """
+    :param zReal: actual z-values, size (n, 1)
+    :param beta_mean: mean of beta
+    :param X: dataset
+    Compute a 90% confidence interval for the beta coefficients
+    """
+
+    # Calculate variance squared in the error
+    z_hat = X.dot(beta)
+    N, P = np.shape(X)
+    sigma2 = (np.sum(np.power((zReal-z_hat), 2)))/N
+
+    # Calculate the variance squared of the beta coefficients
+    var_beta = np.diag(sigma2*np.linalg.inv((X.T.dot(X))))
+
+    # The square root of var_beta is the standard error. Confidence intervals are calculated as mean +/- Z*SE
+    ci_minus = beta_mean - 1.645*var_beta
+    ci_plus = beta_mean + 1.645*var_beta
+
+    return ci_minus, ci_plus
+
+
+def betaCI_Ridge(zReal, beta_mean, X, l):
+    """
+    :param zReal: actual z-values, size (n, 1)
+    :param beta_mean: mean of beta
+    :param X: dataset
+    Compute a 90% confidence interval for the beta coefficients - Ridge
+    """
+
+    # Calculate variance squared in the error
+    z_hat = X.dot(beta)
+    N, P = np.shape(X)
+    sigma_2 = (np.sum(np.power((zReal-z_hat), 2)))/N
+
+    # Calculate the variance squared of the beta coefficients
+    XTX= X.T.dot(X)
+    R, R = np.shape(XTX)
+    var_beta = np.diag(sigma_2*np.linalg.inv((XTX + l*np.identity(R))))
+
+    # The square root of var_beta is the standard error. Confidence intervals are calculated as mean +/- Z*SE
+    ci_minus = beta_mean - 1.645*var_beta
+    ci_plus = beta_mean + 1.645*var_beta
+
+    return ci_minus, ci_plus
+
+def plotFrankes(x_, y_, z_):
+    """
+    Plot Franke's function
+    """
+
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+
+    surf = ax.plot_surface(x_, y_, z_, cmap=cm.coolwarm,
+                       linewidth=0, antialiased=False)
+
+    # Customize the z axis.
+    ax.set_zlim(-0.10, 1.40)
+    ax.zaxis.set_major_locator(LinearLocator(10))
+    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z - Franke')
+
+    # Add a color bar which maps values to colors.
+    clb = fig.colorbar(surf, shrink=0.5, aspect=5)
+    clb.ax.set_title('Level')
+
+    plt.show()
+
+#Ordinary Least Squared function
+def ols(x, y, z, degree = 5):
+    #x: vector of size(n, 1)
+    #y: vector of size(n,1)
+    #z: vector of size(n,1)
+    xyb_ = np.c_[x, y]
+    poly = PolynomialFeatures(degree)
+    xyb = poly.fit_transform(xyb_)
+    #Change from inverse to SGD
+    beta = StochasticGradientDecent(xyb.T.dot(xyb), z).SGD().dot(xyb.T).dot(z)
+    #beta = np.linalg.inv(xyb.T.dot(xyb)).dot(xyb.T).dot(z)
+
+    return beta
+
+def RidgeRegression(x, y, z, degree=5, l=0.0001):
+    """
+    :param x: numpy vector of size (n, 1)
+    :param y: numpy vector of size (n, 1)
+    :param degree: degree of polynomial fit
+    :param l: Ridge penalty coefficient
+    :return: numpy array with the beta coefficients
+    """
+    # Calculate matrix with x, y - polynomials
+    M_ = np.c_[x, y]
+    poly = PolynomialFeatures(degree)
+    M = poly.fit_transform(M_)
+
+    # Calculate beta
+    A = np.arange(1, degree + 2)
+    rows = np.sum(A)
+    #Change from inverse to SGD
+    beta = (StochasticGradientDecent(M.T.dot(M) + l * np.identity(rows), z)).SGD().dot(M.T).dot(z)
+
+    return beta
+
+def Lasso(x, y, z, degree=5, a=1e-06):
+
+    X = np.c_[x, y]
+    poly = PolynomialFeatures(degree=degree)
+    X_ = poly.fit_transform(X)
+
+    clf = linear_model.Lasso(alpha=a, max_iter=5000, fit_intercept=False)
+    clf.fit(X_, z)
+    beta = clf.coef_
+
+    return beta
+
+def bootstrap(x, y, z, p_degree, method, n_bootstrap=100):
+    # Randomly shuffle data
+    data_set = np.c_[x, y, z]
+    np.random.shuffle(data_set)
+    set_size = round(len(x)/5)
+
+    # Extract test-set, never used in training. About 1/5 of total data
+    x_test = data_set[0:set_size, 0]
+    y_test = data_set[0:set_size, 1]
+    z_test = data_set[0:set_size, 2]
+    test_indices = np.linspace(0, set_size-1, set_size)
+
+    # And define the training set as the rest of the data
+    x_train = np.delete(data_set[:, 0], test_indices)
+    y_train = np.delete(data_set[:, 1], test_indices)
+    z_train = np.delete(data_set[:, 2], test_indices)
+
+    Z_predict = []
+
+    MSE = []
+    R2s = []
+    for i in range(n_bootstrap):
+        x_, y_, z_ = resample(x_train, y_train, z_train)
+
+        if method == 'Ridge':
+            # Ridge regression, save beta values
+            beta = RidgeRegression(x_, y_, z_, degree=p_degree)
+        elif method == 'Lasso':
+            beta = Lasso(x_, y_, z_, degree=p_degree)
+        elif method == 'OLS':
+            beta = ols(x_, y_, z_, degree=p_degree)
+        else:
+            print('ERROR: Cannot recognize method')
+            return 0
+
+        M_ = np.c_[x_test, y_test]
+        poly = PolynomialFeatures(p_degree)
+        M = poly.fit_transform(M_)
+        z_hat = M.dot(beta)
+
+        Z_predict.append(z_hat)
+
+        # Calculate MSE
+        MSE.append(np.mean((z_test - z_hat)**2))
+        R2s.append(R2(z_test, z_hat))
+
+    # Calculate MSE, Bias and Variance
+    MSE_M = np.mean(MSE)
+    R2_M = np.mean(R2s)
+    bias = np.mean((z_test - np.mean(Z_predict, axis=0, keepdims=True))**2)
+    variance = np.mean(np.var(Z_predict, axis=0, keepdims=True))
+    return MSE_M, R2_M, bias, variance
+
+
 
 class StochasticGradientDecent(object):
     """docstring for StochasticGradientDecent."""
@@ -87,6 +297,111 @@ class StochasticGradientDecent(object):
 
         return self.theta
 
+
+"""
+    Analysis of a Lasso Regression model of Franke's function
+"""
+
+# Load data
+X = np.load('data.npy')
+x = X[:, 0]
+y = X[:, 1]
+z = FrankeFunction(x, y)
+
+alphas = [10**-10, 10**-9, 10**-8, 10**-7, 10**-6, 10**-5, 10**-4, 10**-3]
+alpha_logs = [-10, -9, -8, -7, -6, -5, -4, -3]
+
+Bs = []
+for al in alphas:
+    Bs.append(Lasso(x, y, z, degree=5, a=al))
+
+# Generate new test data
+x_test = np.random.rand(200)
+y_test = np.random.rand(200)
+z_test = FrankeFunction(x_test, y_test)
+
+M_ = np.c_[x_test, y_test]
+poly = PolynomialFeatures(5)
+M = poly.fit_transform(M_)
+MSEs = []
+R2s = []
+text_file = open("../Results/SGD/Bootstrap_lasso_SGD.txt", "w")
+for i in range(len(alphas)):
+    z_predict = M.dot(Bs[i])
+    MSE = MeanSquaredError(z_test, z_predict)
+    MSEs.append(MSE)
+    R2_score = R2(z_test, z_predict)
+    R2s.append(R2_score)
+    text_file.write('--- Alpha value: {0} ---\n Mean Squared error: {1:.7f} \n R2 Score: {2:.7f}\n'.format(alphas[i], MSE, R2_score))
+
+# make plot
+fig, ax1 = plt.subplots()
+ax1.plot(alpha_logs, MSEs, 'bo-')
+ax1.set_xlabel('Logarithmic alpha')
+# Make the y-axis label, ticks and tick labels match the line color.
+ax1.set_ylabel('MSE', color='b')
+ax1.tick_params('y', colors='b')
+
+ax2 = ax1.twinx()
+ax2.plot(alpha_logs, R2s, 'r*-')
+ax2.set_ylabel('R2 score', color='r')
+ax2.tick_params('y', colors='r')
+
+plt.title('Influence of alpha on MSE and R2 Score')
+fig.tight_layout()
+plt.savefig('../Results/SGD/MSE_R2_alpha_SGD.png')
+
+# Investigate how the alpha values are influenced by noise
+noise = np.arange(0, 0.4, 0.01)
+alphas = [10**-7, 10**-3, 1]
+Bs = []
+
+# Generate more data to test
+x_test = np.random.rand(200)
+y_test = np.random.rand(200)
+M_ = np.c_[x_test, y_test]
+poly5 = PolynomialFeatures(5)
+M = poly5.fit_transform(M_)
+
+for al in alphas:
+    B = []
+    #print(al)
+    for n in noise:
+        z = FrankeFunction(x, y, noise=n)
+        B.append(Lasso(x, y, z, degree=5, a=al))
+    Bs.append(B)
+
+lines = []
+plt.figure()
+for i in range(len(alphas)):
+    text_file.write('--- alpha value: {} --- \n'.format(alphas[i]))
+    line = []
+    for j in range(len(noise)):
+        z_test = FrankeFunction(x_test, y_test, noise=noise[j])
+        z_predict = M.dot(Bs[i][j])
+        MSE = MeanSquaredError(z_test, z_predict)
+        line.append(MSE)
+        R2_score = R2(z_test, z_predict)
+        text_file.write(' Noise: {0} \n Mean Squared error: {1:.7f} \n R2 Score: {2:.7f}\n'.format(noise[j], MSE, R2_score))
+    plt.plot(noise, line, label='Alpha = {0}'.format(alphas[i]))
+
+plt.legend()
+plt.xlabel('Degree of noise')
+plt.ylabel('MSE')
+plt.title('Influence of alpha and noise on MSE')
+plt.savefig('../Results/SGD/alpha_noise_MSE_SGD.png')
+
+MSE_l, R2_l, bias_l, variance_l = bootstrap(x, y, z, method='Lasso', p_degree=5)
+text_file.write('--- BOOTSTRAP --- \n')
+text_file.write('MSE: {} \n'.format(MSE_l))
+text_file.write('R2: {} \n'.format(R2_l))
+text_file.write('Bias: {} \n'.format(bias_l))
+text_file.write('Variance: {} \n'.format(variance_l))
+
+text_file.close()
+
+
+"""
 n = 1000
 x = 2*np.random.rand(n,1)
 y = 4+3*x+np.random.randn(n,1)
@@ -98,234 +413,4 @@ X = np.c_[np.ones((n,1)), x]
 if __name__ == "__main__":
     theta = StochasticGradientDecent(x, y).SGD()
     print(theta)
-"""
-#Standard gradient decent
-def gradient(x, y, theta):
-    return 1/2*x.T @ ((x * theta) - y)
-
-#This is out gamma and the learning scheduel
-def learning_schedule(t0, t1, dt):
-    return t0/(t0+t1*dt)
-
-#The eta values function
-def eta(t0, t1, dt):
-    return dt**2/(t0+t1*dt)
-#SGD which takes the arrays x and y, with n_epoc batches and M minibatches for n itterations
-def SGD_02(learning_schedule, eta, x, y, n_epoc = 50, M = 5, n=1000, dtype = "float64"):
-
-    d_type = np.dtype(dtype)
-
-    #Tests for collable functions
-    if not callable(learning_schedule):
-        raise TypeError("Can not call 'learning_schedule' must be a callable function")
-
-    if not callable(eta):
-        raise TypeError("Can not call 'eta' must be a callable function")
-
-    #Checks matrix size
-    size_matrix = x.shape[0]
-    if size_matrix != y.shape[0]:
-        raise ValueError("'x' and 'y' must have same dimentions")
-
-    #Check to see if batches are right size
-    n_epoc = int(n_epoc)
-    if not 0 < n_epoc <= size_matrix:
-        raise ValueError("Must have a batch size less or equal to observations and greater than zero")
-
-
-    #Check n is greater than zero
-    n = int(n)
-    if  n <= 0:
-        raise ValueError("'n' must be greater than 0 ")
-
-    #Some initial conditions
-    m = int(n/M)
-    t0 = M
-    t1 = n_epoc
-
-    theta = 0
-    v_ = 0
-
-    #Setting up arrays
-    x = np.array(x, dtype=d_type)
-    y = np.array(y, dtype=d_type)
-
-    xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
-
-    #Main SGD loop
-    for epoc in range(n_epoc):
-        #Second SGD loop
-        for i in range(m):
-            end = i + n_epoc
-            #Defining x and y for each itteration
-            x_iter = xy[i:end, :-1]
-            y_iter = xy[i:end, -1:]
-
-            gamma = learning_schedule(t0, t1, epoc/(m+i)) #Calling function to cal. gamma
-            eta_ = eta(t0, t1, epoc/(m+i)) #Calling function to cal. eta
-
-            v_ = gamma*v_ + eta_*grad(gradient)(x_iter, y_iter, theta - gamma*v_) #Cal. v where gradient is from autograd
-            theta = theta - v_ #Theta +1 from this itteration of theta and v
-
-    return theta
-
-#Test run
-n = 1000
-x = 2*np.random.rand(n,1)
-y = 4+3*x+np.random.randn(n,1)
-
-func = SGD_02(learning_schedule, eta, x=x, y=y)
-print("This is the SGD:")
-print(func)
-
-"""
-
-
-
-#SGDReg =linear_model.SGDRegressor(max_iter = 1000,penalty = "elasticnet",loss = 'huber',tol = 1e-3, average = True)
-#SGDReg.fit(x, y)
-#print(SGDReg.coef_.fit(x, y))
-
-"""
-#Old SGD
-
-
-
-def SGD(gradient, x, y, first_iter=1, lr = 0.1, batch_sz = 5, n=100, n_tol = 1e-7, dtype = "float64"):
-
-    #See if we can call gradient
-    if not callable(gradient):
-        raise TypeError("Can not call 'gradient' must be callable")
-
-    d_type = np.dtype(dtype)
-
-    #Setting x and y to arrays
-    x = np.array(x, dtype=d_type)
-    y = np.array(y, dtype=d_type)
-    size_matrix = x.shape[0]
-
-    #initilizing the vector
-    v = np.array(first_iter, dtype = d_type)
-
-    #Checking matrix size, learningrate and batch size
-    if size_matrix != y.shape[0]:
-        raise ValueError("x and y must have same dimentions")
-
-    lr = np.array(lr, dtype = d_type)
-    if np.any(lr <= 0):
-        raise ValueError("The learning rate must be > 0")
-
-    batch_sz = int(batch_sz)
-    if not 0 < batch_sz <= size_matrix:
-        raise ValueError("Must have a batch size less or equal to observations and greater than zero")
-
-    #Checking n itterations and the tolerance
-    n = int(n)
-    if  n <= 0:
-        raise ValueError("n must be > 0 ")
-
-    n_tol = np.array(n_tol, dtype=d_type)
-    if np.any(n_tol <= 0):
-        raise ValueError("The tolerance must be > 0")
-
-    #Might need to change
-    theta = 0
-    eta_ = 0
-    v_ = 0
-    xy = np.c_[x.reshape(size_matrix, -1), y.reshape(size_matrix, 1)]
-
-    #gradient descent
-    for j in range(n):
-        for i in range(0, size_matrix, batch_sz):
-            end = i + batch_sz
-            x_iter = xy[i:end, :-1]
-            y_iter = xy[i:end, -1:]
-
-            gamma = learning_schedule(j*size_matrix+i, batch_sz, n)
-            #theta = theta - gamma*gradient(x_iter, y_iter, theta)
-            eta_ = eta(j*size_matrix+i, batch_sz, n)
-            a = theta+gamma*v_
-            v_ = gamma*v_ + eta_*gradient(x_iter, y_iter, a)
-            theta = theta - v_
-    return theta
-"""
-
-
-
-"""
-#From lecture just test
-def SGD(x, y, M = 5, n_epoch = 50, ):
-    #M size of each minibatch
-
-    n = len(x)
-    X = np.c_[np.ones((n,1)), x]
-    theta_linregres = np.linalg.inv(X.T @ X) @ (X.T @ y)
-
-    theta = np.random.randn(2,1)
-    eta = 10^(-5)
-
-
-
-    m = int(n/M) #number of minibatches
-
-    for e in range(n_epoch):
-        for i in range(m):
-            rand_indx = np.random.randint(m)
-            x_i = X[rand_indx:rand_indx+1]
-            y_i = y[rand_indx:rand_indx+1]
-            grad = 2*x_i.T @ ((x_i @ theta) - y_i)
-            eta = learning_schedule(e*m+i, M, n_epoch)
-            theta = theta - eta*grad
-
-    x_new = np.array([[0],[2]])
-    X_new = np.c_[np.ones((2,1)), x_new]
-    y_predict = X_new.dot(theta)
-
-    return theta, x_new, y_predict
-"""
-
-
-"""Test code above"""
-"""
-n = 1000
-x = 2*np.random.rand(n,1)
-y = 4+3*x+np.random.randn(n,1)
-
-theta, x_new, y_predict = SGD(x, y)
-
-print(theta)
-
-plt.plot(x_new, y_predict, "b-")
-plt.plot(x, y ,'ro')
-plt.axis([0,2.0,0, 15.0])
-plt.xlabel(r'$x$')
-plt.ylabel(r'$y$')
-plt.title(r'Random numbers ')
-plt.show()
-"""
-
-"""Simple Gradient descent"""
-"""
-def step_length(t,t0,t1):
-    return t0/(t+t1)
-
-n = 100 #100 datapoints
-M = 5   #size of each minibatch
-m = int(n/M) #number of minibatches
-n_epochs = 500 #number of epochs
-t0 = 1.0
-t1 = 10
-
-gamma_j = t0/t1
-j = 0
-for epoch in range(1,n_epochs+1):
-    for i in range(m):
-        k = np.random.randint(m) #Pick the k-th minibatch at random
-        #Compute the gradient using the data in minibatch Bk
-        #Compute new suggestion for beta
-        t = epoch*m+i
-        gamma_j = step_length(t,t0,t1)
-        j += 1
-
-print("gamma_j after %d epochs: %g" % (n_epochs,gamma_j))
 """
