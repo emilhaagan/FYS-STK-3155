@@ -140,7 +140,7 @@ def run_NN(X, y, active = "ReLU"):
 
 
 start = timeit.default_timer()
-run_NN(X, y, active = "Tanh")
+run_NN(X, y, active = "sigmoid_tanh")
 stop = timeit.default_timer()
 print('Time: ', stop - start)
 

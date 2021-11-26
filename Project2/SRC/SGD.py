@@ -128,7 +128,7 @@ def ols(x, y, z, degree = 5):
 
     #Change from inverse to SGD
     #print("SGD=",np.shape(StochasticGradientDecent(x = (xyb.T.dot(xyb)), y=z).SGD()))
-    #beta = (StochasticGradientDecent(x = (xyb.T.dot(xyb)), y=z).SGD()).dot(xyb.T).dot(z)
+    #beta = (StochasticGradientDecent(x = (xyb.T.dot(xyb)), y=y).SGD()).dot(xyb.T).dot(z) #unsure about x and y
     #beta = StochasticGradientDecent(x = xyb, y=z).SGD().dot(xyb.T).dot(z)
     beta = StochasticGradientDecent(x, y).SGD().dot(xyb.T).dot(z)
     #beta = np.linalg.inv(xyb.T.dot(xyb)).dot(xyb.T).dot(z)
@@ -152,8 +152,9 @@ def RidgeRegression(x, y, z, degree=5, l=0.0001):
     A = np.arange(1, degree + 2)
     rows = np.sum(A)
     #Change from inverse to SGD
-    #beta = (StochasticGradientDecent(x = (M.T.dot(M) + l * np.identity(rows)), y=y).SGD()).dot(M.T).dot(z)
+
     beta = (StochasticGradientDecent(x = (M.T.dot(M) + l * np.identity(rows)), y=y).SGD()).dot(M.T).dot(z)
+    #beta = (StochasticGradientDecent(x, y).SGD()).dot(M.T).dot(z)
 
     return beta
 
@@ -279,6 +280,7 @@ class StochasticGradientDecent(object):
 
     def SGD(self):
         X = np.c_[np.ones((len(self.x_full),1)), self.x_full]
+
         #size_matrix = x.shape[0]
         self.theta = np.random.randn(X.shape[1],1) #Initilize theta for matrix shape.
 
@@ -291,6 +293,9 @@ class StochasticGradientDecent(object):
                 random_index = self.M*np.random.randint(self.m)
                 xi = X[random_index:random_index+self.M]
                 yi = self.y_full[random_index:random_index+self.M]
+
+                print(np.shape(xi))
+                print(np.shape(yi))
 
                 eta = self.ls(epoc*self.m+k) #Calling function to cal. eta
 
