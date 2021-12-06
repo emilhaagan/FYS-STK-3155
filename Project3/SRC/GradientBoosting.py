@@ -11,20 +11,22 @@ from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_validate
 from sklearn import preprocessing
+from sklearn import svm
 
 
 
 class GradientBoosting():
 
-    def __init__(self, n_epoch, learningrate):
+    def __init__(self, n_epoch, learningrate, max_depth):
         self.n_epoch = n_epoch
         self.learningrate = learningrate
+        self.max_depth = max_depth
 
 
         self.trees = []
         for i in range(n_epoch):
             #self.trees.append(DecisionTreeClassifier())
-            self.trees.append(DecisionTreeRegressor())
+            self.trees.append(DecisionTreeRegressor(max_depth=self.max_depth))
 
 
     def fit(self, X, y):
@@ -34,8 +36,12 @@ class GradientBoosting():
             grad = self.grad(y, y_predict)
             self.trees[i].fit(X, grad)
             up = self.trees[i].predict(X)
+            #fit_tree = DecisionTreeRegressor().fit(X, grad)
+            #up = DecisionTreeRegressor().predict(X)
+            #up = self.predict(DecisionTreeRegressor(), X, y)
 
             y_predict -= np.multiply(self.learningrate, up)
+
 
     def predict(self, X):
         y_predictict = np.array([])
@@ -65,16 +71,71 @@ y = data['target']
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 0)
 
 
+
 #Feature Scaling
 sc = StandardScaler()
-X_train = sc.fit_transform(X_train)
+sc.fit(X_train)
+X_train = sc.transform(X_train)
 X_test = sc.transform(X_test)
 
 
 
-clf = GradientBoosting(n_epoch = 100, learningrate=0.1)
+clf = GradientBoosting(n_epoch = 100, learningrate=1.0, max_depth = 3)
+
+print("---------------------------------------------")
+print(clf.fit(X_train, y_train))
+print("---------------------------------------------")
 
 clf.fit(X_train, y_train)
+#clf.predict(X_train)
+
 #Cross validation
-accuracy = cross_validate(clf, X_test, y_test ,cv=10)['test_score']
+#cg = svm.SVC(clf).fit(X_train, y_train)
+
+score = cross_validate(clf, X_test, y_test ,cv=10)['test_score'] #scoring="accuracy"
+print(score)
+
+#print(cg.score(X_train, y_train))
+#print(cg.score(X_test, y_test))
+
+
+
+
+
+
+
+"""
+
+import scikitplot as skplt
+from sklearn.ensemble import GradientBoostingClassifier
+
+
+
+#now scale the data
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(X_train)
+X_train_scaled = scaler.transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+gd_clf = GradientBoostingClassifier(max_depth=3, n_estimators=100, learning_rate=1.0)
+gd_clf.fit(X_train_scaled, y_train)
+#Cross validation
+accuracy = cross_validate(gd_clf,X_test_scaled,y_test,cv=10)['test_score']
 print(accuracy)
+print("Test set accuracy with Random Forests and scaled data: {:.2f}".format(gd_clf.score(X_test_scaled,y_test)))
+
+
+
+y_pred = gd_clf.predict(X_test_scaled)
+skplt.metrics.plot_confusion_matrix(y_test, y_pred, normalize=True)
+
+plt.show()
+y_probas = gd_clf.predict_proba(X_test_scaled)
+skplt.metrics.plot_roc(y_test, y_probas)
+
+plt.show()
+skplt.metrics.plot_cumulative_gain(y_test, y_probas)
+
+plt.show()
+"""

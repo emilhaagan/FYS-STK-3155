@@ -26,8 +26,8 @@ class Layer():
 
     def back(self, d_val):
         # gradients on weights and biases
-        self.grad_weights = np.dot(self.input.T, d_val)
-        self.grad_bias = np.sum(d_val, axis=0, keepdims=True)
+        self.grad_weights = np.dot(self.input.T, )
+        self.grad_bias = np.sum(, axis=0, keepdims=True)
 
         #L2 regularization on weights
         if self.weight_regularizer_l2 > 0:
