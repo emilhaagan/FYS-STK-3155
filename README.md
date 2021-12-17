@@ -17,4 +17,4 @@ This folder contains the results of project 1, 2 and 3 for course FYS3150/4150, 
 ## For project 3 the code is in a jupyter notebook 
 *For easy running* 
 ### All of the results and prints are in the same file
-The only other python file is our own gradient boosting method which was only used to get a better understanding of gradient boosting.
+The only python files is our own gradient boosting method (which was only used to get a better understanding of gradient boosting) and Bias-Variance Tradeoff.
