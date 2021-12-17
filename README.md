@@ -13,3 +13,6 @@ This folder contains the results of project 1, 2 and 3 for course FYS3150/4150, 
 > python -m unittest test_Analsysfunctions
 
 *Without adding .py*
+
+## For project 3 the code is in a jupyter notebook 
+### All of the results and prints are in the same file
