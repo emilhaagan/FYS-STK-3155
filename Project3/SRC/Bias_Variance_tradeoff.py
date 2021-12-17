@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Dec 14 13:09:50 2021
 
-@author: emilh
-"""
 
 from mlxtend.evaluate import bias_variance_decomp
 import pandas as pd
